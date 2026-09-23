@@ -1,1 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Rose Bakeshop Inventory</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+
+  <section id="loginPage" class="login-page">
+
+    <div class="login-card">
+
+      <div class="brand">
+        <div class="brand-icon">🧁</div>
+
+        <h1>Rose Bakeshop</h1>
+
+        <p>Inventory Management System</p>
+      </div>
+
+      <div id="loginMessage" class="message"></div>
+
+      <form id="loginForm">
+
+        <label>Username</label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="Enter username"
+          required
+        >
+
+        <label>Password</label>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter password"
+          required
+        >
+
+        <label>Gmail</label>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="Enter your Gmail"
+          required
+        >
+
+        <button
+          type="submit"
+          class="primary-btn"
+        >
+          Send OTP
+        </button>
+
+      </form>
+
+      <form
+        id="otpForm"
+        class="hidden"
+      >
+
+        <label>OTP Verification</label>
+
+        <input
+          id="otp"
+          type="text"
+          maxlength="6"
+          placeholder="Enter 6-digit OTP"
+          required
+        >
+
+        <button
+          type="submit"
+          class="primary-btn"
+        >
+          Verify OTP
+        </button>
+
+        <button
+          type="button"
+          id="backToLogin"
+          class="secondary-btn"
+        >
+          Back to Login
+        </button>
+
+      </form>
+
+    </div>
+
+  </section>
+
+
+  <!-- MAIN APPLICATION -->
+
+  <section
+    id="appPage"
+    class="app-page hidden"
+  >
+
+    <header class="top-header">
+
+      <div>
+
+        <h1>🌹 Rose Bakeshop</h1>
+
+        <span>
+          Inventory Management System
+        </span>
+
+      </div>
+
+      <div class="header-actions">
+
+        <button
+          id="settingsBtn"
+          class="header-btn"
+        >
+          ⚙ Settings
+        </button>
+
+        <button
+          id="logoutBtn"
+          class="header-btn logout-btn"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <nav class="top-nav">
+
+      <button
+        id="homeBtn"
+        class="nav-btn active"
+      >
+        Home
+      </button>
+
+      <button
+        id="backBtn"
+        class="nav-btn"
+      >
+        ← Back
+      </button>
+
+    </nav>
+
+
+    <main class="main-content">
+
+      <div
+        id="appMessage"
+        class="message"
+      ></div>
+
+
+      <!-- DASHBOARD -->
+
+      <section id="dashboardPage">
+
+        <div class="welcome-box">
+
+          <h2>Inventory Dashboard</h2>
+
+          <p>
+            Manage your Rose Bakeshop products and stock.
+          </p>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+          <div class="stat-card">
+
+            <span>Total Products</span>
+
+            <strong id="totalProducts">
+              0
+            </strong>
+
+          </div>
+
+          <div class="stat-card">
+
+            <span>Total Stock</span>
+
+            <strong id="totalStock">
+              0
+            </strong>
+
+          </div>
+
+          <div class="stat-card">
+
+            <span>Low Stock</span>
+
+            <strong id="lowStock">
+              0
+            </strong>
+
+          </div>
+
+          <div class="stat-card">
+
+            <span>Inventory Value</span>
+
+            <strong id="inventoryValue">
+              ₱0.00
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="section-card">
+
+          <div class="section-title">
+
+            <div>
+
+              <h2>Products</h2>
+
+              <p>
+                Manage your current inventory.
+              </p>
+
+            </div>
+
+            <button
+              id="addProductBtn"
+              class="primary-btn"
+            >
+              + Add Product
+            </button>
+
+          </div>
+
+
+          <div class="search-box">
+
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search products..."
+            >
+
+          </div>
+
+
+          <div class="table-container">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Unit</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="productTableBody"></tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- PRODUCT FORM -->
+
+      <section
+        id="productPage"
+        class="hidden"
+      >
+
+        <div class="section-card">
+
+          <h2 id="productFormTitle">
+            Add Product
+          </h2>
+
+          <form id="productForm">
+
+            <input
+              type="hidden"
+              id="productId"
+            >
+
+            <div class="form-grid">
+
+              <div>
+
+                <label>Product Name</label>
+
+                <input
+                  id="productName"
+                  type="text"
+                  required
+                >
+
+              </div>
+
+              <div>
+
+                <label>Category</label>
+
+                <input
+                  id="productCategory"
+                  type="text"
+                  placeholder="e.g. Cakes"
+                >
+
+              </div>
+
+              <div>
+
+                <label>Quantity</label>
+
+                <input
+                  id="productQuantity"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                >
+
+              </div>
+
+              <div>
+
+                <label>Unit</label>
+
+                <select id="productUnit">
+
+                  <option value="pcs">
+                    pcs
+                  </option>
+
+                  <option value="box">
+                    box
+                  </option>
+
+                  <option value="pack">
+                    pack
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div>
+
+                <label>Price</label>
+
+                <input
+                  id="productPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+              <button
+                type="submit"
+                class="primary-btn"
+              >
+                Save Product
+              </button>
+
+              <button
+                type="button"
+                id="cancelProductBtn"
+                class="secondary-btn"
+              >
+                Cancel
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </section>
+
+
+      <!-- STOCK IN -->
+
+      <section
+        id="stockInPage"
+        class="hidden"
+      >
+
+        <div class="section-card">
+
+          <h2>Stock In</h2>
+
+          <p>
+            Add additional stock to a product.
+          </p>
+
+          <form id="stockInForm">
+
+            <div>
+
+              <label>Product</label>
+
+              <select
+                id="stockProduct"
+                required
+              ></select>
+
+            </div>
+
+            <div>
+
+              <label>Quantity to Add</label>
+
+              <input
+                id="stockAmount"
+                type="number"
+                min="1"
+                step="1"
+                required
+              >
+
+            </div>
+
+            <div class="form-actions">
+
+              <button
+                type="submit"
+                class="primary-btn"
+              >
+                Add Stock
+              </button>
+
+              <button
+                type="button"
+                id="cancelStockBtn"
+                class="secondary-btn"
+              >
+                Cancel
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </section>
+
+
+      <!-- SETTINGS -->
+
+      <section
+        id="settingsPage"
+        class="hidden"
+      >
+
+        <div class="section-card">
+
+          <h2>Settings</h2>
+
+          <p>
+            Update inventory configuration.
+          </p>
+
+          <form id="settingsForm">
+
+            <div class="form-grid">
+
+              <div>
+
+                <label>
+                  Reorder Level
+                </label>
+
+                <input
+                  id="reorderLevel"
+                  type="number"
+                  min="0"
+                >
+
+              </div>
+
+              <div>
+
+                <label>
+                  Low Stock Alert Threshold
+                </label>
+
+                <input
+                  id="lowStockThreshold"
+                  type="number"
+                  min="0"
+                >
+
+              </div>
+
+              <div>
+
+                <label>
+                  Default Unit
+                </label>
+
+                <select id="defaultUnit">
+
+                  <option value="pcs">
+                    pcs
+                  </option>
+
+                  <option value="box">
+                    box
+                  </option>
+
+                  <option value="pack">
+                    pack
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div>
+
+                <label>
+                  Current Password
+                </label>
+
+                <input
+                  id="currentPassword"
+                  type="password"
+                  placeholder="Required to save settings"
+                >
+
+              </div>
+
+            </div>
+
+            <button
+              type="submit"
+              class="primary-btn"
+            >
+              Save Settings
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div class="section-card">
+
+          <div class="section-title">
+
+            <div>
+
+              <h2>Login Activity</h2>
+
+              <p>
+                Login and logout records.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div id="loginActivity"></div>
+
+        </div>
+
+
+        <div class="section-card">
+
+          <div class="section-title">
+
+            <div>
+
+              <h2>Recent Changes</h2>
+
+              <p>
+                Product and settings activity.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div id="recentActivity"></div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </section>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
