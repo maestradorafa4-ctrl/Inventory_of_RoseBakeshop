@@ -1,0 +1,591 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #fffaf0;
+  color: #4b3328;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    linear-gradient(
+      135deg,
+      #fffaf0,
+      #f8ead8
+    );
+}
+
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 22px;
+  box-shadow:
+    0 12px 35px rgba(90, 60, 40, 0.12);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.brand-icon {
+  font-size: 55px;
+  margin-bottom: 10px;
+}
+
+.brand h1 {
+  color: #9b5c45;
+  margin-bottom: 7px;
+}
+
+.brand p {
+  color: #8a7468;
+  font-size: 14px;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  margin-top: 15px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #dccabd;
+  border-radius: 10px;
+  background: #fffdf9;
+  color: #4b3328;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: #b9785b;
+  box-shadow:
+    0 0 0 3px rgba(185, 120, 91, 0.12);
+}
+
+.primary-btn,
+.secondary-btn,
+.header-btn,
+.nav-btn,
+.small-btn {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 17px;
+  transition: 0.2s;
+}
+
+.primary-btn {
+  background: #a7654b;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #8f5039;
+}
+
+.secondary-btn {
+  background: #eee2d7;
+  color: #5d4033;
+}
+
+.secondary-btn:hover {
+  background: #e2d3c6;
+}
+
+.login-card .primary-btn {
+  width: 100%;
+  margin-top: 22px;
+}
+
+.login-card .secondary-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+
+/* =========================
+   MESSAGES
+========================= */
+
+.message {
+  padding: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+  border-radius: 9px;
+}
+
+.message:not(:empty) {
+  padding: 11px 13px;
+}
+
+.message.success {
+  background: #e4f5e8;
+  color: #26733a;
+}
+
+.message.error {
+  background: #fde7e4;
+  color: #9b3025;
+}
+
+.message.info {
+  background: #e7effb;
+  color: #365d8d;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.top-header {
+  min-height: 78px;
+  background: #ffffff;
+  border-bottom: 1px solid #eaded4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 5%;
+  gap: 20px;
+}
+
+.top-header h1 {
+  color: #965b43;
+  font-size: 24px;
+}
+
+.top-header span {
+  font-size: 13px;
+  color: #8a7468;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-btn {
+  background: #f0e4d9;
+  color: #5c4033;
+}
+
+.header-btn:hover {
+  background: #e4d4c7;
+}
+
+.logout-btn {
+  background: #9b5c45;
+  color: white;
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.top-nav {
+  display: flex;
+  gap: 10px;
+  padding: 12px 5%;
+  background: #fffdf9;
+  border-bottom: 1px solid #eaded4;
+}
+
+.nav-btn {
+  background: transparent;
+  color: #74574a;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+  background: #eee0d3;
+  color: #8d5038;
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.main-content {
+  width: 90%;
+  max-width: 1250px;
+  margin: 25px auto 50px;
+}
+
+.welcome-box {
+  background: #f7eadf;
+  border-radius: 18px;
+  padding: 25px;
+  margin-bottom: 22px;
+}
+
+.welcome-box h2 {
+  color: #8e533d;
+  margin-bottom: 7px;
+}
+
+.welcome-box p {
+  color: #806d62;
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #eaded4;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.stat-card span {
+  color: #806d62;
+  font-size: 13px;
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #9a5c43;
+  font-size: 25px;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.section-card {
+  background: #ffffff;
+  border: 1px solid #eaded4;
+  border-radius: 18px;
+  padding: 25px;
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.section-title h2,
+.section-card h2 {
+  color: #8e533d;
+  margin-bottom: 5px;
+}
+
+.section-title p,
+.section-card > p {
+  color: #806d62;
+  font-size: 14px;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-box {
+  margin-bottom: 18px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+th,
+td {
+  padding: 13px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee3da;
+  font-size: 14px;
+}
+
+th {
+  background: #f8eee5;
+  color: #704d3e;
+}
+
+td {
+  color: #5b453b;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px;
+  color: #8b776c;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.in-stock {
+  background: #e2f4e5;
+  color: #28743c;
+}
+
+.low-stock {
+  background: #fff0ce;
+  color: #8b6412;
+}
+
+.out-stock {
+  background: #fde2df;
+  color: #a2372d;
+}
+
+
+/* =========================
+   ACTIONS
+========================= */
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.small-btn {
+  background: #eaded4;
+  color: #624538;
+  padding: 7px 9px;
+  font-size: 12px;
+}
+
+.small-btn:hover {
+  background: #dccabd;
+}
+
+.stock-btn {
+  background: #e0eee1;
+  color: #38613e;
+}
+
+.delete-btn {
+  background: #f6dfdc;
+  color: #9b382e;
+}
+
+
+/* =========================
+   FORMS
+========================= */
+
+.form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, 1fr);
+  gap: 5px 18px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+
+/* =========================
+   ACTIVITY
+========================= */
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee3da;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item strong {
+  color: #795040;
+  font-size: 14px;
+}
+
+.activity-item p {
+  margin-top: 4px;
+  color: #8a7468;
+  font-size: 13px;
+}
+
+.activity-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.activity-status {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #527056;
+  margin-bottom: 4px;
+}
+
+.activity-right small {
+  color: #968278;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .top-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-btn {
+    flex: 1;
+  }
+
+  .main-content {
+    width: 94%;
+  }
+
+  .section-card {
+    padding: 18px;
+  }
+
+  .section-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .activity-right {
+    text-align: left;
+  }
+
+}
+
+@media (max-width: 430px) {
+
+  .login-card {
+    padding: 25px 20px;
+  }
+
+  .top-header h1 {
+    font-size: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+}
