@@ -1,6 +1,751 @@
 const API_URL =
   'https://script.google.com/macros/s/AKfycbx-KpDFXlX152DoB0Rk4GfFkmvK1SEhWiaFco5BX0GskCgAzVhgy-UYiDBLURDtnWN6/exec';
 
+let token = sessionStorage.getItem('rose_token') || '';
+let currentUsername = sessionStorage.getItem('rose_username') || '';
+let products = [];
+let currentPage = 'dashboard';
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const loginPage = document.getElementById('loginPage');
+const appPage = document.getElementById('appPage');
+
+const loginForm = document.getElementById('loginForm');
+const otpForm = document.getElementById('otpForm');
+
+const loginMessage = document.getElementById('loginMessage');
+const appMessage = document.getElementById('appMessage');
+
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const emailInput = document.getElementById('email');
+const otpInput = document.getElementById('otp');
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  bindEvents();
+
+  if (token) {
+    showApp();
+    loadProducts();
+  }
+
+});
+
+
+/* =========================
+   EVENTS
+========================= */
+
+function bindEvents() {
+
+  if (loginForm) {
+    loginForm.addEventListener(
+      'submit',
+      sendLogin
+    );
+  }
+
+  if (otpForm) {
+    otpForm.addEventListener(
+      'submit',
+      verifyOtp
+    );
+  }
+
+  const backToLogin =
+    document.getElementById('backToLogin');
+
+  if (backToLogin) {
+    backToLogin.addEventListener(
+      'click',
+      function () {
+
+        otpForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+
+        clearMessage(loginMessage);
+
+      }
+    );
+  }
+
+  const logoutBtn =
+    document.getElementById('logoutBtn');
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener(
+      'click',
+      logout
+    );
+  }
+
+  const settingsBtn =
+    document.getElementById('settingsBtn');
+
+  if (settingsBtn) {
+    settingsBtn.addEventListener(
+      'click',
+      function () {
+        showPage('settings');
+      }
+    );
+  }
+
+  const homeBtn =
+    document.getElementById('homeBtn');
+
+  if (homeBtn) {
+    homeBtn.addEventListener(
+      'click',
+      function () {
+        showPage('dashboard');
+      }
+    );
+  }
+
+  const backBtn =
+    document.getElementById('backBtn');
+
+  if (backBtn) {
+    backBtn.addEventListener(
+      'click',
+      function () {
+        showPage('dashboard');
+      }
+    );
+  }
+
+  const addProductBtn =
+    document.getElementById('addProductBtn');
+
+  if (addProductBtn) {
+    addProductBtn.addEventListener(
+      'click',
+      openAddProduct
+    );
+  }
+
+  const cancelProductBtn =
+    document.getElementById('cancelProductBtn');
+
+  if (cancelProductBtn) {
+    cancelProductBtn.addEventListener(
+      'click',
+      function () {
+        showPage('dashboard');
+      }
+    );
+  }
+
+  const cancelStockBtn =
+    document.getElementById('cancelStockBtn');
+
+  if (cancelStockBtn) {
+    cancelStockBtn.addEventListener(
+      'click',
+      function () {
+        showPage('dashboard');
+      }
+    );
+  }
+
+  const productForm =
+    document.getElementById('productForm');
+
+  if (productForm) {
+    productForm.addEventListener(
+      'submit',
+      saveProduct
+    );
+  }
+
+  const stockInForm =
+    document.getElementById('stockInForm');
+
+  if (stockInForm) {
+    stockInForm.addEventListener(
+      'submit',
+      saveStockIn
+    );
+  }
+
+  const settingsForm =
+    document.getElementById('settingsForm');
+
+  if (settingsForm) {
+    settingsForm.addEventListener(
+      'submit',
+      saveSettings
+    );
+  }
+
+  const searchInput =
+    document.getElementById('searchInput');
+
+  if (searchInput) {
+    searchInput.addEventListener(
+      'input',
+      renderProducts
+    );
+  }
+
+}
+
+
+/* =========================
+   API CONNECTION
+========================= */
+
+async function api(action, data = {}) {
+
+  const payload = {
+    action: action,
+    ...data
+  };
+
+  try {
+
+    const response = await fetch(
+      API_URL,
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type':
+            'text/plain;charset=utf-8'
+        },
+
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        'Server returned HTTP ' +
+        response.status
+      );
+    }
+
+    const text =
+      await response.text();
+
+    if (!text) {
+      throw new Error(
+        'The server returned an empty response.'
+      );
+    }
+
+    try {
+
+      return JSON.parse(text);
+
+    } catch (error) {
+
+      console.error(
+        'Invalid server response:',
+        text
+      );
+
+      return {
+        success: false,
+        message:
+          'The Apps Script server returned an invalid response.'
+      };
+    }
+
+  } catch (error) {
+
+    console.error(
+      'API connection error:',
+      error
+    );
+
+    return {
+      success: false,
+      message:
+        'Unable to connect to the server. Check your Apps Script deployment and URL.'
+    };
+  }
+
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+async function sendLogin(event) {
+
+  event.preventDefault();
+
+  clearMessage(loginMessage);
+
+  const username =
+    usernameInput.value.trim();
+
+  const password =
+    passwordInput.value;
+
+  const email =
+    emailInput.value.trim();
+
+  if (!username ||
+      !password ||
+      !email) {
+
+    showMessage(
+      loginMessage,
+      'Please complete all fields.',
+      'error'
+    );
+
+    return;
+  }
+
+  showMessage(
+    loginMessage,
+    'Sending OTP to your Gmail...',
+    'info'
+  );
+
+  const result =
+    await api(
+      'login',
+      {
+        username: username,
+        password: password,
+        email: email
+      }
+    );
+
+  if (!result.success) {
+
+    showMessage(
+      loginMessage,
+      result.message ||
+        'Login failed.',
+      'error'
+    );
+
+    return;
+  }
+
+  showMessage(
+    loginMessage,
+    'OTP sent successfully. Check your Gmail.',
+    'success'
+  );
+
+  loginForm.classList.add('hidden');
+  otpForm.classList.remove('hidden');
+
+  otpInput.value = '';
+  otpInput.focus();
+
+}
+
+
+/* =========================
+   VERIFY OTP
+========================= */
+
+async function verifyOtp(event) {
+
+  event.preventDefault();
+
+  clearMessage(loginMessage);
+
+  const username =
+    usernameInput.value.trim();
+
+  const email =
+    emailInput.value.trim();
+
+  const otp =
+    otpInput.value.trim();
+
+  if (!otp) {
+
+    showMessage(
+      loginMessage,
+      'Please enter the OTP.',
+      'error'
+    );
+
+    return;
+  }
+
+  if (!/^\d{6}$/.test(otp)) {
+
+    showMessage(
+      loginMessage,
+      'OTP must contain exactly 6 digits.',
+      'error'
+    );
+
+    return;
+  }
+
+  showMessage(
+    loginMessage,
+    'Verifying OTP...',
+    'info'
+  );
+
+  const result =
+    await api(
+      'verifyOtp',
+      {
+        username: username,
+        email: email,
+        otp: otp
+      }
+    );
+
+  if (!result.success) {
+
+    showMessage(
+      loginMessage,
+      result.message ||
+        'OTP verification failed.',
+      'error'
+    );
+
+    return;
+  }
+
+  token =
+    result.token;
+
+  currentUsername =
+    result.username || username;
+
+  sessionStorage.setItem(
+    'rose_token',
+    token
+  );
+
+  sessionStorage.setItem(
+    'rose_username',
+    currentUsername
+  );
+
+  otpForm.reset();
+
+  showApp();
+
+  await loadProducts();
+
+}
+
+
+/* =========================
+   SHOW APP
+========================= */
+
+function showApp() {
+
+  loginPage.classList.add('hidden');
+
+  appPage.classList.remove('hidden');
+
+  showPage('dashboard');
+
+}
+
+
+/* =========================
+   PAGE NAVIGATION
+========================= */
+
+function showPage(page) {
+
+  currentPage = page;
+
+  const dashboardPage =
+    document.getElementById(
+      'dashboardPage'
+    );
+
+  const productPage =
+    document.getElementById(
+      'productPage'
+    );
+
+  const stockInPage =
+    document.getElementById(
+      'stockInPage'
+    );
+
+  const settingsPage =
+    document.getElementById(
+      'settingsPage'
+    );
+
+  if (dashboardPage) {
+    dashboardPage.classList.add('hidden');
+  }
+
+  if (productPage) {
+    productPage.classList.add('hidden');
+  }
+
+  if (stockInPage) {
+    stockInPage.classList.add('hidden');
+  }
+
+  if (settingsPage) {
+    settingsPage.classList.add('hidden');
+  }
+
+
+  if (page === 'dashboard') {
+
+    dashboardPage.classList.remove(
+      'hidden'
+    );
+
+    loadProducts();
+
+  }
+
+
+  if (page === 'product') {
+
+    productPage.classList.remove(
+      'hidden'
+    );
+
+  }
+
+
+  if (page === 'stock') {
+
+    stockInPage.classList.remove(
+      'hidden'
+    );
+
+    loadStockProducts();
+
+  }
+
+
+  if (page === 'settings') {
+
+    settingsPage.classList.remove(
+      'hidden'
+    );
+
+    loadSettings();
+    loadActivity();
+
+  }
+
+}
+
+
+/* =========================
+   LOAD PRODUCTS
+========================= */
+
+async function loadProducts() {
+
+  if (!token) {
+    return;
+  }
+
+  const result =
+    await api(
+      'products',
+      {
+        token: token
+      }
+    );
+
+  if (!result.success) {
+
+    handleSessionError(
+      result.message
+    );
+
+    return;
+  }
+
+  products =
+    result.products || [];
+
+  renderProducts();
+  updateStats();
+
+}
+
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
+
+function renderProducts() {
+
+  const tbody =
+    document.getElementById(
+      'productTableBody'
+    );
+
+  if (!tbody) {
+    return;
+  }
+
+  const searchInput =
+    document.getElementById(
+      'searchInput'
+    );
+
+  const search =
+    searchInput
+      ? searchInput.value
+          .toLowerCase()
+          .trim()
+      : '';
+
+  const filtered =
+    products.filter(
+      function (product) {
+
+        const name =
+          String(
+            product.name || ''
+          ).toLowerCase();
+
+        const category =
+          String(
+            product.category || ''
+          ).toLowerCase();
+
+        return (
+          name.includes(search) ||
+          category.includes(search)
+            product.unit || 'pcs'
+          )}
+        </td>
+
+        <td>
+          ₱${formatMoney(
+            product.price
+   UPDATE DASHBOARD STATS
+========================= */
+
+function updateStats() {
+
+  const totalProducts =
+    products.length;
+
+  const totalStock =
+    products.reduce(
+      function (sum, product) {
+
+        return (
+          sum +
+          Number(
+            product.quantity || 0
+          )
+        );
+
+      },
+      0
+    );
+
+
+  const lowStock =
+    products.filter(
+      function (product) {
+
+        return (
+          product.status ===
+            'Low Stock' ||
+          product.status ===
+            'Out of Stock'
+        );
+
+      }
+    ).length;
+
+
+  const inventoryValue =
+    products.reduce(
+      function (sum, product) {
+
+        return (
+          sum +
+          (
+            Number(
+              product.quantity || 0
+            ) *
+            Number(
+              product.price || 0
+            )
+          )
+        );
+
+      },
+      0
+    );
+
+
+  const totalProductsElement =
+    document.getElementById(
+      'totalProducts'
+    );
+
+  const totalStockElement =
+    document.getElementById(
+      'totalStock'
+    );
+
+  const lowStockElement =
+    document.getElementById(
+      'lowStock'
+    );
+
+  const inventoryValueElement =
+    document.getElementById(
+      'inventoryValue'
+    );
+
+
+  if (totalProductsElement) {
+    totalProductsElement.textContent =
+      totalProducts;
+  }
+
+  if (totalStockElement) {
+    totalStockElement.textContent =
+      formatNumber(totalStock);
+  }
+
+  if (lowStockElement) {
+    lowStockElement.textContent =
+      lowStock;
+  }
+
+  if (inventoryValueElement) {
+    inventoryValueElement.textContent =
+      '₱' +
+      formatMoney
+
+On Wed, 23 Sept 2026, 11:50 pm rafa maestrado, <maestradorafa4@gmail.com> wrote:
+const API_URL =
+  'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
 
 let token =
   sessionStorage.getItem('rose_token') || '';
