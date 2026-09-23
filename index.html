@@ -1,1138 +1,516 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head> 
- 
-    <meta charset="UTF-8">
+<head>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta charset="UTF-8">
 
-    <meta
-        name="theme-color"
-        content="#8b3a3a"
-    >
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-    <title>
-        Rose Bakeshop Inventory
-    </title>
+<title>Rose Bakeshop Inventory</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<link rel="stylesheet" href="style.css">
 
 </head>
 
-
 <body>
 
+<!-- ================= LOGIN ================= -->
 
-<!-- =====================================================
-     LOGIN
-===================================================== -->
+<section id="loginScreen" class="login-screen">
 
-<section
-    id="loginScreen"
-    class="screen login-screen"
->
+  <div class="login-card">
 
-    <div class="login-card">
+    <div class="logo">🌹</div>
 
-        <div class="brand-mark">
-            🌹
-        </div>
+    <h1>ROSE BAKESHOP</h1>
 
-        <h1>
-            ROSE BAKESHOP
-        </h1>
+    <p class="subtitle">
+      Inventory Manager Login
+    </p>
 
-        <p class="subtitle">
-            Inventory Manager Login
-        </p>
+    <!-- LOGIN -->
 
+    <div id="loginStep">
 
-        <!-- LOGIN STEP -->
+      <form id="loginForm">
 
-        <div
-            id="loginStep"
-            class="auth-step"
+        <label>Username</label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="Enter username"
+          required
         >
 
-            <form id="loginForm">
+        <label>Password</label>
 
-                <label for="username">
-                    Username
-                </label>
-
-                <input
-                    id="username"
-                    type="text"
-                    autocomplete="username"
-                    placeholder="Enter username"
-                    required
-                >
-
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    id="password"
-                    type="password"
-                    autocomplete="current-password"
-                    placeholder="Enter password"
-                    required
-                >
-
-
-                <label for="email">
-                    Gmail
-                </label>
-
-                <input
-                    id="email"
-                    type="email"
-                    autocomplete="email"
-                    placeholder="example@gmail.com"
-                    required
-                >
-
-
-                <button
-                    class="primary-btn"
-                    type="submit"
-                >
-                    Continue to Verification
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <!-- OTP STEP -->
-
-        <div
-            id="otpStep"
-            class="auth-step hidden"
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter password"
+          required
         >
 
-            <div class="otp-icon">
-                ✉️
-            </div>
+        <label>Gmail</label>
 
-            <h2>
-                Verify your Gmail
-            </h2>
+        <input
+          id="email"
+          type="email"
+          placeholder="example@gmail.com"
+          required
+        >
 
-            <p id="otpMessage">
-                A 6-digit OTP was sent to your Gmail.
-            </p>
+        <button
+          class="primary-btn"
+          type="submit"
+        >
+          Continue
+        </button>
 
-
-            <form id="otpForm">
-
-                <label for="otp">
-                    One-Time Password
-                </label>
-
-                <input
-                    id="otp"
-                    inputmode="numeric"
-                    maxlength="6"
-                    pattern="[0-9]{6}"
-                    placeholder="000000"
-                    required
-                >
-
-
-                <button
-                    class="primary-btn"
-                    type="submit"
-                >
-                    Verify & Login
-                </button>
-
-            </form>
-
-
-            <button
-                id="backToLogin"
-                class="link-btn"
-                type="button"
-            >
-                Back to login
-            </button>
-
-
-            <div
-                id="otpAttempts"
-                class="attempts"
-            >
-                5 OTP attempts available
-            </div>
-
-        </div>
+      </form>
 
     </div>
+
+    <!-- OTP -->
+
+    <div id="otpStep" class="hidden">
+
+      <div class="otp-icon">✉️</div>
+
+      <h2>Verify your Gmail</h2>
+
+      <p id="otpMessage">
+        A 6-digit OTP was sent to your registered Gmail.
+      </p>
+
+      <form id="otpForm">
+
+        <label>One-Time Password</label>
+
+        <input
+          id="otp"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="000000"
+          required
+        >
+
+        <button
+          class="primary-btn"
+          type="submit"
+        >
+          Verify & Login
+        </button>
+
+      </form>
+
+      <button
+        id="backToLogin"
+        class="link-btn"
+        type="button"
+      >
+        Back to Login
+      </button>
+
+      <p id="otpAttempts"></p>
+
+    </div>
+
+  </div>
 
 </section>
 
 
-
-<!-- =====================================================
-     APPLICATION
-===================================================== -->
+<!-- ================= APPLICATION ================= -->
 
 <section
-    id="appScreen"
-    class="hidden"
+  id="appScreen"
+  class="hidden"
 >
-
 
 <header class="top-header">
 
-    <div class="brand">
+  <div class="brand">
 
-        <span>
-            🌹
-        </span>
+    <div class="brand-icon">🌹</div>
 
-        <div>
-
-            <strong>
-                Rose Bakeshop
-            </strong>
-
-            <small>
-                Inventory Management System
-            </small>
-
-        </div>
-
+    <div>
+      <strong>Rose Bakeshop</strong>
+      <small>Inventory Management System</small>
     </div>
 
+  </div>
 
-    <div class="header-buttons">
+  <div class="header-buttons">
 
-        <button
-            id="settingsTopBtn"
-            class="header-btn"
-        >
-            ⚙ Settings
-        </button>
+    <button
+      id="settingsTopBtn"
+      class="header-btn"
+    >
+      ⚙ Settings
+    </button>
 
+    <button
+      id="logoutBtn"
+      class="logout-btn"
+    >
+      Logout
+    </button>
 
-        <button
-            id="logoutBtn"
-            class="logout-btn"
-        >
-            Logout
-        </button>
-
-    </div>
+  </div>
 
 </header>
 
 
-
 <main class="main-container">
 
+  <div class="page-heading">
 
-    <div class="page-heading">
+    <p>INVENTORY MANAGER</p>
 
-        <div>
+    <h1 id="pageTitle">
+      Dashboard
+    </h1>
 
-            <p class="eyebrow">
-                INVENTORY MANAGER
-            </p>
+  </div>
 
-            <h1 id="pageTitle">
-                Dashboard
-            </h1>
 
-        </div>
+  <!-- ================= DASHBOARD ================= -->
+
+  <section
+    id="dashboardPage"
+    class="page"
+  >
+
+    <div class="dashboard-grid">
+
+      <div class="stat-card">
+        <span>Total Products</span>
+        <strong id="totalProducts">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Total Items</span>
+        <strong id="totalItems">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Low Stock</span>
+        <strong id="lowStock">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Out of Stock</span>
+        <strong id="outOfStock">0</strong>
+      </div>
 
     </div>
 
 
+    <div class="value-card">
 
-    <!-- =================================================
-         DASHBOARD
-    ================================================= -->
+      <span>Inventory Value</span>
 
-    <section
-        id="dashboardPage"
-        class="page"
-    >
+      <strong id="inventoryValue">
+        ₱0.00
+      </strong>
 
-        <div class="dashboard-grid">
+    </div>
 
-            <div class="stat-card">
-                <span>Total Products</span>
-                <strong id="totalProducts">
-                    0
-                </strong>
-            </div>
 
+    <div class="section-card">
 
-            <div class="stat-card">
-                <span>Total Items</span>
-                <strong id="totalItems">
-                    0
-                </strong>
-            </div>
+      <div class="section-title">
 
+        <h2>Notifications</h2>
 
-            <div class="stat-card">
-                <span>Low Stock</span>
-                <strong id="lowStock">
-                    0
-                </strong>
-            </div>
+        <button
+          class="small-btn"
+          onclick="loadNotifications()"
+        >
+          Refresh
+        </button>
 
+      </div>
 
-            <div class="stat-card">
-                <span>Out of Stock</span>
-                <strong id="outOfStock">
-                    0
-                </strong>
-            </div>
+      <div id="notificationList">
+        No notifications.
+      </div>
 
+    </div>
 
-            <div class="stat-card wide">
+  </section>
 
-                <span>
-                    Inventory Value
-                </span>
 
-                <strong id="inventoryValue">
-                    ₱0.00
-                </strong>
+  <!-- ================= PRODUCTS ================= -->
 
-            </div>
+  <section
+    id="productsPage"
+    class="page hidden"
+  >
 
-        </div>
+    <div class="toolbar">
 
+      <input
+        id="searchProducts"
+        type="search"
+        placeholder="Search products..."
+      >
 
+      <button
+        id="refreshProducts"
+        class="small-btn"
+      >
+        Refresh
+      </button>
 
-        <div class="section-card">
+    </div>
 
-            <div class="section-head">
+    <div id="productList"></div>
 
-                <h2>
-                    Inventory Notifications
-                </h2>
+  </section>
 
-                <button
-                    id="markReadBtn"
-                    class="secondary-btn"
-                >
-                    Mark all read
-                </button>
 
-            </div>
+  <!-- ================= ADD PRODUCT ================= -->
 
+  <section
+    id="addPage"
+    class="page hidden"
+  >
 
-            <div
-                id="dashboardNotifications"
-                class="notification-list"
-            ></div>
+    <div class="form-card">
 
-        </div>
+      <h2>Add Product</h2>
 
-    </section>
+      <form id="productForm">
 
+        <label>Product Name</label>
 
+        <input
+          id="productName"
+          required
+          placeholder="Product name"
+        >
 
-    <!-- =================================================
-         PRODUCTS
-    ================================================= -->
+        <label>Category</label>
 
-    <section
-        id="productsPage"
-        class="page hidden"
-    >
+        <input
+          id="category"
+          required
+          placeholder="Bread, Pastry, Ingredient..."
+        >
 
-        <div class="toolbar">
+        <label>Unit</label>
 
-            <input
-                id="searchProducts"
-                type="search"
-                placeholder="Search products..."
-            >
+        <select id="unit">
 
+          <option value="pcs">pcs</option>
+          <option value="box">box</option>
+          <option value="pack">pack</option>
 
-            <button
-                id="refreshProducts"
-                class="secondary-btn"
-            >
-                Refresh
-            </button>
+        </select>
+
+        <label>Initial Stock</label>
 
+        <input
+          id="stock"
+          type="number"
+          min="0"
+          value="0"
+          required
+        >
+
+        <label>Reorder Level</label>
+
+        <input
+          id="reorderLevel"
+          type="number"
+          min="0"
+          value="5"
+          required
+        >
 
-            <button
-                id="addProductTopBtn"
-                class="primary-btn small"
-            >
-                + Add Product
-            </button>
+        <label>Price</label>
 
-        </div>
+        <input
+          id="price"
+          type="number"
+          min="0"
+          step="0.01"
+          value="0"
+          required
+        >
 
+        <button
+          class="primary-btn"
+          type="submit"
+        >
+          Add Product
+        </button>
 
-        <div
-            id="productList"
-            class="product-list"
-        ></div>
+      </form>
 
-    </section>
+    </div>
 
+  </section>
 
 
-    <!-- =================================================
-         ADD PRODUCT
-    ================================================= -->
+  <!-- ================= SETTINGS ================= -->
 
-    <section
-        id="addPage"
-        class="page hidden"
-    >
+  <section
+    id="settingsPage"
+    class="page hidden"
+  >
 
-        <div class="form-card">
+    <div class="form-card">
 
-            <div class="section-head">
+      <h2>System Settings</h2>
 
-                <h2>
-                    Add Product
-                </h2>
+      <form id="settingsForm">
 
-                <button
-                    class="secondary-btn backBtn"
-                    data-target="productsPage"
-                >
-                    Back
-                </button>
+        <label>
+          Current Password
+        </label>
 
-            </div>
+        <input
+          id="currentPassword"
+          type="password"
+          required
+        >
 
+        <label>
+          OTP Expiration Minutes
+        </label>
 
-            <form
-                id="productForm"
-                class="form-grid"
-            >
+        <input
+          id="otpExpiration"
+          type="number"
+          min="1"
+          max="1440"
+          required
+        >
 
-                <label>
-                    Product Name
+        <label>
+          Session Expiration Minutes
+        </label>
 
-                    <input
-                        id="productName"
-                        required
-                    >
-                </label>
+        <input
+          id="sessionExpiration"
+          type="number"
+          min="1"
+          max="1440"
+          required
+        >
 
+        <label>
+          System Name
+        </label>
 
-                <label>
-                    Category
+        <input
+          id="systemName"
+          required
+        >
 
-                    <select
-                        id="category"
-                        required
-                    >
+        <button
+          class="primary-btn"
+          type="submit"
+        >
+          Save Settings
+        </button>
 
-                        <option value="">
-                            Select category
-                        </option>
+      </form>
 
-                        <option>
-                            bread
-                        </option>
+    </div>
 
-                        <option>
-                            pastry
-                        </option>
 
-                        <option>
-                            cake
-                        </option>
+    <div class="section-card">
 
-                        <option>
-                            cookie
-                        </option>
+      <div class="section-title">
 
-                        <option>
-                            beverage
-                        </option>
+        <h2>Login Activity</h2>
 
-                        <option>
-                            ingredient
-                        </option>
+        <button
+          id="refreshAudit"
+          class="small-btn"
+        >
+          Refresh
+        </button>
 
-                        <option>
-                            other
-                        </option>
+      </div>
 
-                    </select>
+      <select id="auditFilter">
 
-                </label>
+        <option value="ALL">
+          All Activity
+        </option>
 
+        <option value="LOGIN">
+          Login
+        </option>
 
-                <label>
-                    Unit
+        <option value="LOGOUT">
+          Logout
+        </option>
 
-                    <select
-                        id="unit"
-                        required
-                    >
+        <option value="PRODUCT">
+          Product
+        </option>
 
-                        <option value="pcs">
-                            pcs
-                        </option>
+        <option value="STOCK">
+          Stock
+        </option>
 
-                        <option value="box">
-                            box
-                        </option>
+        <option value="SETTING">
+          Settings
+        </option>
 
-                        <option value="pack">
-                            pack
-                        </option>
+      </select>
 
-                        <option value="tray">
-                            tray
-                        </option>
+      <div id="auditList"></div>
 
-                    </select>
+    </div>
 
-                </label>
-
-
-                <label>
-                    Cost Price
-
-                    <input
-                        id="costPrice"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value="0"
-                    >
-
-                </label>
-
-
-                <label>
-                    Selling Price
-
-                    <input
-                        id="sellingPrice"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value="0"
-                    >
-
-                </label>
-
-
-                <label>
-                    Initial Stock
-
-                    <input
-                        id="initialStock"
-                        type="number"
-                        min="0"
-                        step="1"
-                        value="0"
-                    >
-
-                </label>
-
-
-                <label>
-                    Reorder Level
-
-                    <input
-                        id="reorderLevel"
-                        type="number"
-                        min="0"
-                        step="1"
-                        value="20"
-                    >
-
-                </label>
-
-
-                <div class="form-actions">
-
-                    <button
-                        class="primary-btn"
-                        type="submit"
-                    >
-                        Save Product
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =================================================
-         STOCK IN
-    ================================================= -->
-
-    <section
-        id="stockPage"
-        class="page hidden"
-    >
-
-        <div class="form-card">
-
-            <div class="section-head">
-
-                <h2>
-                    Stock In
-                </h2>
-
-                <button
-                    class="secondary-btn backBtn"
-                    data-target="productsPage"
-                >
-                    Back
-                </button>
-
-            </div>
-
-
-            <form
-                id="stockForm"
-                class="form-grid"
-            >
-
-                <label>
-                    Product
-
-                    <select
-                        id="stockProduct"
-                        required
-                    ></select>
-
-                </label>
-
-
-                <label>
-                    Quantity to Add
-
-                    <input
-                        id="stockAmount"
-                        type="number"
-                        min="1"
-                        step="1"
-                        required
-                        placeholder="Enter quantity"
-                    >
-
-                </label>
-
-
-                <div class="form-actions">
-
-                    <button
-                        class="primary-btn"
-                        type="submit"
-                    >
-                        Confirm Stock In
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =================================================
-         EDIT PRODUCT
-    ================================================= -->
-
-    <section
-        id="editPage"
-        class="page hidden"
-    >
-
-        <div class="form-card">
-
-            <div class="section-head">
-
-                <h2>
-                    Edit Product
-                </h2>
-
-                <button
-                    class="secondary-btn backBtn"
-                    data-target="productsPage"
-                >
-                    Back
-                </button>
-
-            </div>
-
-
-            <form
-                id="editForm"
-                class="form-grid"
-            >
-
-                <input
-                    id="editId"
-                    type="hidden"
-                >
-
-
-                <label>
-                    Product Name
-
-                    <input
-                        id="editProductName"
-                        required
-                    >
-
-                </label>
-
-
-                <label>
-                    Category
-
-                    <select
-                        id="editCategory"
-                        required
-                    >
-
-                        <option>
-                            bread
-                        </option>
-
-                        <option>
-                            pastry
-                        </option>
-
-                        <option>
-                            cake
-                        </option>
-
-                        <option>
-                            cookie
-                        </option>
-
-                        <option>
-                            beverage
-                        </option>
-
-                        <option>
-                            ingredient
-                        </option>
-
-                        <option>
-                            other
-                        </option>
-
-                    </select>
-
-                </label>
-
-
-                <label>
-                    Unit
-
-                    <select id="editUnit">
-
-                        <option>
-                            pcs
-                        </option>
-
-                        <option>
-                            kg
-                        </option>
-
-                        <option>
-                            g
-                        </option>
-
-                        <option>
-                            box
-                        </option>
-
-                        <option>
-                            pack
-                        </option>
-
-                        <option>
-                            tray
-                        </option>
-
-                        <option>
-                            bottle
-                        </option>
-
-                        <option>
-                            liter
-                        </option>
-
-                    </select>
-
-                </label>
-
-
-                <label>
-                    Cost Price
-
-                    <input
-                        id="editCostPrice"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                    >
-
-                </label>
-
-
-                <label>
-                    Selling Price
-
-                    <input
-                        id="editSellingPrice"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                    >
-
-                </label>
-
-
-                <label>
-                    Quantity
-
-                    <input
-                        id="editQuantity"
-                        type="number"
-                        min="0"
-                        step="1"
-                    >
-
-                </label>
-
-
-                <label>
-                    Reorder Level
-
-                    <input
-                        id="editReorderLevel"
-                        type="number"
-                        min="0"
-                        step="1"
-                    >
-
-                </label>
-
-
-                <div class="form-actions">
-
-                    <button
-                        class="primary-btn"
-                        type="submit"
-                    >
-                        Save Changes
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =================================================
-         SETTINGS
-    ================================================= -->
-
-    <section
-        id="settingsPage"
-        class="page hidden"
-    >
-
-        <div class="settings-grid">
-
-
-            <div class="form-card">
-
-                <div class="section-head">
-
-                    <h2>
-                        System Settings
-                    </h2>
-
-                </div>
-
-
-                <div class="authorization-box">
-
-                    <strong>
-                        Authorization Required
-                    </strong>
-
-                    <p>
-                        Configuration changes require the Inventory Manager's current password.
-                    </p>
-
-                </div>
-
-
-                <form
-                    id="settingsForm"
-                    class="form-grid"
-                >
-
-                    <label>
-                        Reorder Level
-
-                        <input
-                            id="settingsReorder"
-                            type="number"
-                            min="0"
-                            max="100"
-                            required
-                        >
-
-                    </label>
-
-
-                    <label>
-                        Low Stock Threshold
-
-                        <input
-                            id="settingsLow"
-                            type="number"
-                            min="0"
-                            max="100000"
-                            required
-                        >
-
-                    </label>
-
-
-                    <label>
-                        Default Unit
-
-                        <select id="settingsUnit">
-
-                            <option>
-                                pcs
-                            </option>
-
-                            <option>
-                                kg
-                            </option>
-
-                            <option>
-                                g
-                            </option>
-
-                            <option>
-                                box
-                            </option>
-
-                            <option>
-                                pack
-                            </option>
-
-                            <option>
-                                tray
-                            </option>
-
-                            <option>
-                                bottle
-                            </option>
-
-                            <option>
-                                liter
-                            </option>
-
-                        </select>
-
-                    </label>
-
-
-                    <label>
-                        Current Password
-
-                        <input
-                            id="currentPassword"
-                            type="password"
-                            required
-                            placeholder="Re-enter password to authorize"
-                        >
-
-                    </label>
-
-
-                    <div class="form-actions">
-
-                        <button
-                            class="primary-btn"
-                            type="submit"
-                        >
-                            Save Settings
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-
-
-            <!-- AUDIT LOGS -->
-
-            <div class="section-card audit-card">
-
-                <div class="section-head">
-
-                    <h2>
-                        Audit Logs
-                    </h2>
-
-                    <button
-                        id="refreshAudit"
-                        class="secondary-btn"
-                    >
-                        Refresh
-                    </button>
-
-                </div>
-
-
-                <div class="audit-filter">
-
-                    <select id="auditFilter">
-
-                        <option value="ALL">
-                            All Activities
-                        </option>
-
-                        <option value="LOGIN">
-                            Login
-                        </option>
-
-                        <option value="LOGOUT">
-                            Logout
-                        </option>
-
-                        <option value="PRODUCT_ADDED">
-                            Add Product
-                        </option>
-
-                        <option value="PRODUCT_UPDATED">
-                            Edit Product
-                        </option>
-
-                        <option value="STOCK_IN">
-                            Stock In
-                        </option>
-
-                        <option value="PRODUCT_DELETED">
-                            Delete Product
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div
-                    id="auditList"
-                    class="audit-list"
-                ></div>
-
-            </div>
-
-        </div>
-
-    </section>
+  </section>
 
 </main>
 
 
-
-<!-- =====================================================
-     BOTTOM NAVIGATION
-===================================================== -->
+<!-- ================= NAVIGATION ================= -->
 
 <nav class="bottom-nav">
 
-    <button
-        data-page="dashboardPage"
-    >
-        ⌂
-        <span>
-            Home
-        </span>
-    </button>
+  <button data-page="dashboardPage">
+    🏠
+    <span>Home</span>
+  </button>
 
+  <button data-page="productsPage">
+    📦
+    <span>Products</span>
+  </button>
 
-    <button
-        data-page="productsPage"
-    >
-        ▣
-        <span>
-            Products
-        </span>
-    </button>
+  <button data-page="addPage">
+    ➕
+    <span>Add</span>
+  </button>
 
-
-    <button
-        data-page="addPage"
-    >
-        ＋
-        <span>
-            Add
-        </span>
-    </button>
-
-
-    <button
-        data-page="settingsPage"
-    >
-        ⚙
-        <span>
-            Settings
-        </span>
-    </button>
+  <button data-page="settingsPage">
+    ⚙️
+    <span>Settings</span>
+  </button>
 
 </nav>
 
 </section>
 
 
-<div
-    id="toast"
-    class="toast"
-></div>
-
+<div id="toast" class="toast"></div>
 
 <script src="script.js"></script>
 
