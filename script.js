@@ -1,210 +1,173 @@
+/* =========================================================
+   ROSE BAKESHOP INVENTORY SYSTEM
+   FRONTEND JAVASCRIPT
+========================================================= */
+
 const API_URL =
-  'https://script.google.com/macros/s/AKfycbwjHXaPD8tofjq897v8ti3ZTHON1vJY9m4P8JNZMQcBWnEEHYC9tcedOBPVtsuFznjf/exec';
+  'https://script.google.com/macros/s/AKfycbx-KpDFXlX152DoB0Rk4GfFkmv1KSEhWiaFco5BX0GskAzVhgy-UYiDBLURDtnWN6/exec';
+
+
+/* =========================================================
+   SESSION
+========================================================= */
 
 let token = sessionStorage.getItem('rose_token') || '';
-let currentUsername = sessionStorage.getItem('rose_username') || '';
+let currentUsername =
+  sessionStorage.getItem('rose_username') || '';
+
 let products = [];
-let currentPage = 'dashboard';
+let previousPage = 'dashboard';
 
 
-/* =========================
+/* =========================================================
    ELEMENTS
-========================= */
+========================================================= */
 
-const loginPage = document.getElementById('loginPage');
-const appPage = document.getElementById('appPage');
+const loginPage =
+  document.getElementById('loginPage');
 
-const loginForm = document.getElementById('loginForm');
-const otpForm = document.getElementById('otpForm');
+const appPage =
+  document.getElementById('appPage');
 
-const loginMessage = document.getElementById('loginMessage');
-const appMessage = document.getElementById('appMessage');
+const loginForm =
+  document.getElementById('loginForm');
 
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-const emailInput = document.getElementById('email');
-const otpInput = document.getElementById('otp');
+const otpForm =
+  document.getElementById('otpForm');
+
+const usernameInput =
+  document.getElementById('username');
+
+const passwordInput =
+  document.getElementById('password');
+
+const emailInput =
+  document.getElementById('email');
+
+const otpInput =
+  document.getElementById('otp');
+
+const loginMessage =
+  document.getElementById('loginMessage');
+
+const otpMessage =
+  document.getElementById('otpMessage');
+
+const productsBody =
+  document.getElementById('productsBody');
+
+const activityBody =
+  document.getElementById('activityBody');
+
+const totalProducts =
+  document.getElementById('totalProducts');
+
+const totalStock =
+  document.getElementById('totalStock');
+
+const inventoryValue =
+  document.getElementById('inventoryValue');
+
+const lowStockCount =
+  document.getElementById('lowStockCount');
 
 
-/* =========================
-   START
-========================= */
+/* =========================================================
+   PAGE ELEMENTS
+========================================================= */
 
-document.addEventListener('DOMContentLoaded', function () {
+const pages = {
+  dashboard:
+    document.getElementById('dashboardPage'),
 
-  bindEvents();
+  addProduct:
+    document.getElementById('addProductPage'),
 
-  if (token) {
-    showApp();
-    loadProducts();
+  editProduct:
+    document.getElementById('editProductPage'),
+
+  stockIn:
+    document.getElementById('stockInPage'),
+
+  settings:
+    document.getElementById('settingsPage')
+};
+
+
+/* =========================================================
+   UTILITY
+========================================================= */
+
+function showElement(element) {
+  if (element) {
+    element.classList.remove('hidden');
   }
-
-});
-
-
-/* =========================
-   EVENTS
-========================= */
-
-function bindEvents() {
-
-  if (loginForm) {
-    loginForm.addEventListener(
-      'submit',
-      sendLogin
-    );
-  }
-
-  if (otpForm) {
-    otpForm.addEventListener(
-      'submit',
-      verifyOtp
-    );
-  }
-
-  const backToLogin =
-    document.getElementById('backToLogin');
-
-  if (backToLogin) {
-    backToLogin.addEventListener(
-      'click',
-      function () {
-
-        otpForm.classList.add('hidden');
-        loginForm.classList.remove('hidden');
-
-        clearMessage(loginMessage);
-
-      }
-    );
-  }
-
-  const logoutBtn =
-    document.getElementById('logoutBtn');
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener(
-      'click',
-      logout
-    );
-  }
-
-  const settingsBtn =
-    document.getElementById('settingsBtn');
-
-  if (settingsBtn) {
-    settingsBtn.addEventListener(
-      'click',
-      function () {
-        showPage('settings');
-      }
-    );
-  }
-
-  const homeBtn =
-    document.getElementById('homeBtn');
-
-  if (homeBtn) {
-    homeBtn.addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-  }
-
-  const backBtn =
-    document.getElementById('backBtn');
-
-  if (backBtn) {
-    backBtn.addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-  }
-
-  const addProductBtn =
-    document.getElementById('addProductBtn');
-
-  if (addProductBtn) {
-    addProductBtn.addEventListener(
-      'click',
-      openAddProduct
-    );
-  }
-
-  const cancelProductBtn =
-    document.getElementById('cancelProductBtn');
-
-  if (cancelProductBtn) {
-    cancelProductBtn.addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-  }
-
-  const cancelStockBtn =
-    document.getElementById('cancelStockBtn');
-
-  if (cancelStockBtn) {
-    cancelStockBtn.addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-  }
-
-  const productForm =
-    document.getElementById('productForm');
-
-  if (productForm) {
-    productForm.addEventListener(
-      'submit',
-      saveProduct
-    );
-  }
-
-  const stockInForm =
-    document.getElementById('stockInForm');
-
-  if (stockInForm) {
-    stockInForm.addEventListener(
-      'submit',
-      saveStockIn
-    );
-  }
-
-  const settingsForm =
-    document.getElementById('settingsForm');
-
-  if (settingsForm) {
-    settingsForm.addEventListener(
-      'submit',
-      saveSettings
-    );
-  }
-
-  const searchInput =
-    document.getElementById('searchInput');
-
-  if (searchInput) {
-    searchInput.addEventListener(
-      'input',
-      renderProducts
-    );
-  }
-
 }
 
 
-/* =========================
-   API CONNECTION
-========================= */
+function hideElement(element) {
+  if (element) {
+    element.classList.add('hidden');
+  }
+}
+
+
+function clearMessage(element) {
+  if (!element) return;
+
+  element.textContent = '';
+  element.className = 'message';
+}
+
+
+function showMessage(element, message, type = 'info') {
+
+  if (!element) return;
+
+  element.textContent = message;
+
+  element.className =
+    'message ' + type;
+}
+
+
+function escapeHtml(value) {
+
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+
+function money(value) {
+
+  const number = Number(value) || 0;
+
+  return '₱' +
+    number.toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+}
+
+
+function formatNumber(value) {
+
+  return (Number(value) || 0)
+    .toLocaleString('en-PH');
+}
+
+
+/* =========================================================
+   API
+========================================================= */
 
 async function api(action, data = {}) {
 
@@ -214,6 +177,11 @@ async function api(action, data = {}) {
   };
 
   try {
+
+    console.log(
+      'API REQUEST:',
+      action
+    );
 
     const response = await fetch(
       API_URL,
@@ -229,21 +197,35 @@ async function api(action, data = {}) {
       }
     );
 
+
     if (!response.ok) {
+
       throw new Error(
         'Server returned HTTP ' +
         response.status
       );
+
     }
+
 
     const text =
       await response.text();
 
+
+    console.log(
+      'API RESPONSE:',
+      text
+    );
+
+
     if (!text) {
+
       throw new Error(
         'The server returned an empty response.'
       );
+
     }
+
 
     try {
 
@@ -261,6 +243,7 @@ async function api(action, data = {}) {
         message:
           'The Apps Script server returned an invalid response.'
       };
+
     }
 
   } catch (error) {
@@ -273,22 +256,34 @@ async function api(action, data = {}) {
     return {
       success: false,
       message:
-        'Unable to connect to the server. Check your Apps Script deployment and URL.'
+        'Unable to connect to the server. Please check your Apps Script deployment.'
     };
+
   }
 
 }
 
 
-/* =========================
+/* =========================================================
    LOGIN
-========================= */
+========================================================= */
 
 async function sendLogin(event) {
 
-  event.preventDefault();
+  /*
+    VERY IMPORTANT:
+    This prevents the browser from refreshing
+    the page when Send OTP is pressed.
+  */
+
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
 
   clearMessage(loginMessage);
+
 
   const username =
     usernameInput.value.trim();
@@ -299,18 +294,76 @@ async function sendLogin(event) {
   const email =
     emailInput.value.trim();
 
-  if (!username ||
-      !password ||
-      !email) {
+
+  if (!username) {
 
     showMessage(
       loginMessage,
-      'Please complete all fields.',
+      'Please enter your username.',
       'error'
     );
 
+    usernameInput.focus();
+
     return;
   }
+
+
+  if (!password) {
+
+    showMessage(
+      loginMessage,
+      'Please enter your password.',
+      'error'
+    );
+
+    passwordInput.focus();
+
+    return;
+  }
+
+
+  if (!email) {
+
+    showMessage(
+      loginMessage,
+      'Please enter your Gmail address.',
+      'error'
+    );
+
+    emailInput.focus();
+
+    return;
+  }
+
+
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+
+    showMessage(
+      loginMessage,
+      'Please enter a valid Gmail address.',
+      'error'
+    );
+
+    emailInput.focus();
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById('sendOtpBtn');
+
+
+  if (button) {
+
+    button.disabled = true;
+
+    button.textContent =
+      'Sending OTP...';
+
+  }
+
 
   showMessage(
     loginMessage,
@@ -318,52 +371,114 @@ async function sendLogin(event) {
     'info'
   );
 
-  const result =
-    await api(
-      'login',
-      {
-        username: username,
-        password: password,
-        email: email
-      }
+
+  try {
+
+    const result =
+      await api(
+        'login',
+        {
+          username: username,
+          password: password,
+          email: email
+        }
+      );
+
+
+    console.log(
+      'LOGIN RESULT:',
+      result
     );
 
-  if (!result.success) {
+
+    if (!result || !result.success) {
+
+      showMessage(
+        loginMessage,
+        result &&
+        result.message
+          ? result.message
+          : 'Login failed.',
+        'error'
+      );
+
+      /*
+        IMPORTANT:
+        Do NOT clear username,
+        password, or email here.
+      */
+
+      return;
+    }
+
+
+    /*
+      OTP was successfully sent.
+      Keep the user's login information
+      while moving to the OTP screen.
+    */
+
+    showMessage(
+      otpMessage,
+      'OTP sent successfully. Check your Gmail.',
+      'success'
+    );
+
+
+    hideElement(loginForm);
+
+    showElement(otpForm);
+
+
+    otpInput.value = '';
+
+    otpInput.focus();
+
+  } catch (error) {
+
+    console.error(
+      'SEND OTP ERROR:',
+      error
+    );
 
     showMessage(
       loginMessage,
-      result.message ||
-        'Login failed.',
+      'An error occurred while sending the OTP.',
       'error'
     );
 
-    return;
+  } finally {
+
+    if (button) {
+
+      button.disabled = false;
+
+      button.textContent =
+        'Send OTP';
+
+    }
+
   }
-
-  showMessage(
-    loginMessage,
-    'OTP sent successfully. Check your Gmail.',
-    'success'
-  );
-
-  loginForm.classList.add('hidden');
-  otpForm.classList.remove('hidden');
-
-  otpInput.value = '';
-  otpInput.focus();
 
 }
 
 
-/* =========================
+/* =========================================================
    VERIFY OTP
-========================= */
+========================================================= */
 
 async function verifyOtp(event) {
 
-  event.preventDefault();
+  if (event) {
 
-  clearMessage(loginMessage);
+    event.preventDefault();
+    event.stopPropagation();
+
+  }
+
+
+  clearMessage(otpMessage);
+
 
   const username =
     usernameInput.value.trim();
@@ -374,195 +489,278 @@ async function verifyOtp(event) {
   const otp =
     otpInput.value.trim();
 
+
   if (!otp) {
 
     showMessage(
-      loginMessage,
+      otpMessage,
       'Please enter the OTP.',
       'error'
     );
 
+    otpInput.focus();
+
     return;
   }
 
-  if (!/^\d{6}$/.test(otp)) {
+
+  if (otp.length !== 6) {
 
     showMessage(
-      loginMessage,
-      'OTP must contain exactly 6 digits.',
+      otpMessage,
+      'OTP must contain 6 digits.',
       'error'
     );
 
+    otpInput.focus();
+
     return;
   }
 
+
+  const button =
+    document.getElementById('verifyOtpBtn');
+
+
+  if (button) {
+
+    button.disabled = true;
+
+    button.textContent =
+      'Verifying...';
+
+  }
+
+
   showMessage(
-    loginMessage,
+    otpMessage,
     'Verifying OTP...',
     'info'
   );
 
-  const result =
-    await api(
-      'verifyOtp',
-      {
-        username: username,
-        email: email,
-        otp: otp
-      }
+
+  try {
+
+    const result =
+      await api(
+        'verifyOtp',
+        {
+          username: username,
+          email: email,
+          otp: otp
+        }
+      );
+
+
+    console.log(
+      'OTP RESULT:',
+      result
     );
 
-  if (!result.success) {
+
+    if (!result || !result.success) {
+
+      showMessage(
+        otpMessage,
+        result &&
+        result.message
+          ? result.message
+          : 'Invalid OTP.',
+        'error'
+      );
+
+      return;
+    }
+
+
+    token =
+      result.token || '';
+
+    currentUsername =
+      result.username ||
+      username;
+
+
+    if (!token) {
+
+      showMessage(
+        otpMessage,
+        'Login succeeded, but no session token was returned.',
+        'error'
+      );
+
+      return;
+    }
+
+
+    sessionStorage.setItem(
+      'rose_token',
+      token
+    );
+
+    sessionStorage.setItem(
+      'rose_username',
+      currentUsername
+    );
+
+
+    /*
+      Now the login is complete.
+    */
+
+    showApp();
+
+
+    await loadProducts();
+
+
+  } catch (error) {
+
+    console.error(
+      'OTP VERIFICATION ERROR:',
+      error
+    );
 
     showMessage(
-      loginMessage,
-      result.message ||
-        'OTP verification failed.',
+      otpMessage,
+      'An error occurred while verifying the OTP.',
       'error'
     );
 
-    return;
+  } finally {
+
+    if (button) {
+
+      button.disabled = false;
+
+      button.textContent =
+        'Verify OTP';
+
+    }
+
   }
-
-  token =
-    result.token;
-
-  currentUsername =
-    result.username || username;
-
-  sessionStorage.setItem(
-    'rose_token',
-    token
-  );
-
-  sessionStorage.setItem(
-    'rose_username',
-    currentUsername
-  );
-
-  otpForm.reset();
-
-  showApp();
-
-  await loadProducts();
 
 }
 
 
-/* =========================
-   SHOW APP
-========================= */
+/* =========================================================
+   RETURN TO LOGIN
+========================================================= */
+
+function backToLogin() {
+
+  hideElement(otpForm);
+
+  showElement(loginForm);
+
+  clearMessage(otpMessage);
+   /*
+    We intentionally keep the username,
+    password and Gmail fields.
+  */
+
+  otpInput.value = '';
+
+}
+
+
+/* =========================================================
+   SHOW APPLICATION
+========================================================= */
 
 function showApp() {
 
-  loginPage.classList.add('hidden');
+  hideElement(loginPage);
 
-  appPage.classList.remove('hidden');
+  showElement(appPage);
 
   showPage('dashboard');
 
 }
 
 
-/* =========================
+/* =========================================================
+   SHOW LOGIN
+========================================================= */
+
+function showLogin() {
+
+  hideElement(appPage);
+
+  showElement(loginPage);
+
+  hideElement(otpForm);
+
+  showElement(loginForm);
+
+}
+
+
+/* =========================================================
    PAGE NAVIGATION
-========================= */
+========================================================= */
 
-function showPage(page) {
+function showPage(pageName) {
 
-  currentPage = page;
+  Object.keys(pages).forEach(
+    function (key) {
 
-  const dashboardPage =
-    document.getElementById(
-      'dashboardPage'
+      if (pages[key]) {
+
+        hideElement(pages[key]);
+
+      }
+
+    }
+  );
+
+
+  if (pages[pageName]) {
+
+    showElement(
+      pages[pageName]
     );
 
-  const productPage =
-    document.getElementById(
-      'productPage'
-    );
-
-  const stockInPage =
-    document.getElementById(
-      'stockInPage'
-    );
-
-  const settingsPage =
-    document.getElementById(
-      'settingsPage'
-    );
-
-  if (dashboardPage) {
-    dashboardPage.classList.add('hidden');
-  }
-
-  if (productPage) {
-    productPage.classList.add('hidden');
-  }
-
-  if (stockInPage) {
-    stockInPage.classList.add('hidden');
-  }
-
-  if (settingsPage) {
-    settingsPage.classList.add('hidden');
   }
 
 
-  if (page === 'dashboard') {
+  previousPage =
+    pageName;
 
-    dashboardPage.classList.remove(
-      'hidden'
-    );
+
+  if (pageName === 'dashboard') {
 
     loadProducts();
 
   }
 
 
-  if (page === 'product') {
-
-    productPage.classList.remove(
-      'hidden'
-    );
-
-  }
-
-
-  if (page === 'stock') {
-
-    stockInPage.classList.remove(
-      'hidden'
-    );
-
-    loadStockProducts();
-
-  }
-
-
-  if (page === 'settings') {
-
-    settingsPage.classList.remove(
-      'hidden'
-    );
+  if (pageName === 'settings') {
 
     loadSettings();
+
     loadActivity();
+
+  }
+
+
+  if (pageName === 'stockIn') {
+
+    populateStockProducts();
 
   }
 
 }
 
 
-/* =========================
+/* =========================================================
    LOAD PRODUCTS
-========================= */
+========================================================= */
 
 async function loadProducts() {
 
-  if (!token) {
-    return;
-  }
+  if (!token) return;
+
 
   const result =
     await api(
@@ -572,701 +770,47 @@ async function loadProducts() {
       }
     );
 
-  if (!result.success) {
+
+  if (!result || !result.success) {
 
     handleSessionError(
-      result.message
+      result
     );
 
     return;
   }
 
+
   products =
-    result.products || [];
+    Array.isArray(result.products)
+      ? result.products
+      : [];
+
 
   renderProducts();
-  updateStats();
+
+  updateDashboard();
+
+  populateStockProducts();
 
 }
 
 
-/* =========================
+/* =========================================================
    RENDER PRODUCTS
-========================= */
+========================================================= */
 
 function renderProducts() {
 
-  const tbody =
-    document.getElementById(
-      'productTableBody'
-    );
+  if (!productsBody) return;
 
-  if (!tbody) {
-    return;
-  }
 
-  const searchInput =
-    document.getElementById(
-      'searchInput'
-    );
+  if (!products.length) {
 
-  const search =
-    searchInput
-      ? searchInput.value
-          .toLowerCase()
-          .trim()
-      : '';
-
-  const filtered =
-    products.filter(
-      function (product) {
-
-        const name =
-          String(
-            product.name || ''
-          ).toLowerCase();
-
-        const category =
-          String(
-            product.category || ''
-          ).toLowerCase();
-
-        return (
-          name.includes(search) ||
-          category.includes(search)
-            product.unit || 'pcs'
-          )}
-        </td>
-
-        <td>
-          ₱${formatMoney(
-            product.price
-   UPDATE DASHBOARD STATS
-========================= */
-
-function updateStats() {
-
-  const totalProducts =
-    products.length;
-
-  const totalStock =
-    products.reduce(
-      function (sum, product) {
-
-        return (
-          sum +
-          Number(
-            product.quantity || 0
-          )
-        );
-
-      },
-      0
-    );
-
-
-  const lowStock =
-    products.filter(
-      function (product) {
-
-        return (
-          product.status ===
-            'Low Stock' ||
-          product.status ===
-            'Out of Stock'
-        );
-
-      }
-    ).length;
-
-
-  const inventoryValue =
-    products.reduce(
-      function (sum, product) {
-
-        return (
-          sum +
-          (
-            Number(
-              product.quantity || 0
-            ) *
-            Number(
-              product.price || 0
-            )
-          )
-        );
-
-      },
-      0
-    );
-
-
-  const totalProductsElement =
-    document.getElementById(
-      'totalProducts'
-    );
-
-  const totalStockElement =
-    document.getElementById(
-      'totalStock'
-    );
-
-  const lowStockElement =
-    document.getElementById(
-      'lowStock'
-    );
-
-  const inventoryValueElement =
-    document.getElementById(
-      'inventoryValue'
-    );
-
-
-  if (totalProductsElement) {
-    totalProductsElement.textContent =
-      totalProducts;
-  }
-
-  if (totalStockElement) {
-    totalStockElement.textContent =
-      formatNumber(totalStock);
-  }
-
-  if (lowStockElement) {
-    lowStockElement.textContent =
-      lowStock;
-  }
-
-  if (inventoryValueElement) {
-    inventoryValueElement.textContent =
-      '₱' +
-      formatMoney
-
-On Wed, 23 Sept 2026, 11:50 pm rafa maestrado, <maestradorafa4@gmail.com> wrote:
-const API_URL =
-  'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
-
-
-let token =
-  sessionStorage.getItem('rose_token') || '';
-
-let currentUsername =
-  sessionStorage.getItem('rose_username') || '';
-
-let products = [];
-
-let currentPage = 'dashboard';
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const loginPage =
-  document.getElementById('loginPage');
-
-const appPage =
-  document.getElementById('appPage');
-
-const loginForm =
-  document.getElementById('loginForm');
-
-const otpForm =
-  document.getElementById('otpForm');
-
-const loginMessage =
-  document.getElementById('loginMessage');
-
-const appMessage =
-  document.getElementById('appMessage');
-
-const usernameInput =
-  document.getElementById('username');
-
-const passwordInput =
-  document.getElementById('password');
-
-const emailInput =
-  document.getElementById('email');
-
-const otpInput =
-  document.getElementById('otp');
-
-
-/* =========================
-   START
-========================= */
-
-document.addEventListener(
-  'DOMContentLoaded',
-  function () {
-
-    bindEvents();
-
-    if (token) {
-      showApp();
-      loadProducts();
-    }
-
-  }
-);
-
-
-/* =========================
-   EVENTS
-========================= */
-
-function bindEvents() {
-
-  loginForm.addEventListener(
-    'submit',
-    sendLogin
-  );
-
-  otpForm.addEventListener(
-    'submit',
-    verifyOtp
-  );
-
-  document
-    .getElementById('backToLogin')
-    .addEventListener(
-      'click',
-      function () {
-
-        otpForm.classList.add('hidden');
-        loginForm.classList.remove('hidden');
-
-        loginMessage.textContent = '';
-
-      }
-    );
-
-  document
-    .getElementById('logoutBtn')
-    .addEventListener(
-      'click',
-      logout
-    );
-
-  document
-    .getElementById('settingsBtn')
-    .addEventListener(
-      'click',
-      function () {
-        showPage('settings');
-      }
-    );
-
-  document
-    .getElementById('homeBtn')
-    .addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-
-  document
-    .getElementById('backBtn')
-    .addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-
-  document
-    .getElementById('addProductBtn')
-    .addEventListener(
-      'click',
-      function () {
-        openAddProduct();
-      }
-    );
-
-  document
-    .getElementById('cancelProductBtn')
-    .addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-
-  document
-    .getElementById('cancelStockBtn')
-    .addEventListener(
-      'click',
-      function () {
-        showPage('dashboard');
-      }
-    );
-
-  document
-    .getElementById('productForm')
-    .addEventListener(
-      'submit',
-      saveProduct
-    );
-
-  document
-    .getElementById('stockInForm')
-    .addEventListener(
-      'submit',
-      saveStockIn
-    );
-
-  document
-    .getElementById('settingsForm')
-    .addEventListener(
-      'submit',
-      saveSettings
-    );
-
-  document
-    .getElementById('searchInput')
-    .addEventListener(
-      'input',
-      renderProducts
-    );
-
-}
-
-
-/* =========================
-   API
-========================= */
-
-async function api(action, data = {}) {
-
-  const payload = {
-    action: action,
-    ...data
-  };
-
-  try {
-
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type':
-              'text/plain;charset=utf-8'
-          },
-
-          body: JSON.stringify(payload)
-        }
-      );
-
-    return await response.json();
-
-  } catch (error) {
-
-    return {
-      success: false,
-      message:
-        'Unable to connect to the server. Check your Apps Script URL.'
-    };
-  }
-}
-
-
-/* =========================
-   LOGIN
-========================= */
-
-async function sendLogin(event) {
-
-  event.preventDefault();
-
-  clearMessage(loginMessage);
-
-  const username =
-    usernameInput.value.trim();
-
-  const password =
-    passwordInput.value;
-
-  const email =
-    emailInput.value.trim();
-
-  if (!username || !password || !email) {
-
-    showMessage(
-      loginMessage,
-      'Please complete all fields.',
-      'error'
-    );
-
-    return;
-  }
-
-  showMessage(
-    loginMessage,
-    'Sending OTP...',
-    'info'
-  );
-
-  const result =
-    await api(
-      'login',
-      {
-        username,
-        password,
-        email
-      }
-    );
-
-  if (!result.success) {
-
-    showMessage(
-      loginMessage,
-      result.message,
-      'error'
-    );
-
-    return;
-  }
-
-  showMessage(
-    loginMessage,
-    'OTP sent. Check your Gmail.',
-    'success'
-  );
-
-  loginForm.classList.add('hidden');
-  otpForm.classList.remove('hidden');
-
-  otpInput.focus();
-}
-
-
-/* =========================
-   OTP
-========================= */
-
-async function verifyOtp(event) {
-
-  event.preventDefault();
-
-  clearMessage(loginMessage);
-
-  const username =
-    usernameInput.value.trim();
-
-  const email =
-    emailInput.value.trim();
-
-  const otp =
-    otpInput.value.trim();
-
-  if (!otp) {
-
-    showMessage(
-      loginMessage,
-      'Please enter the OTP.',
-      'error'
-    );
-
-    return;
-  }
-
-  showMessage(
-    loginMessage,
-    'Verifying OTP...',
-    'info'
-  );
-
-  const result =
-    await api(
-      'verifyOtp',
-      {
-        username,
-        email,
-        otp
-      }
-    );
-
-  if (!result.success) {
-
-    showMessage(
-      loginMessage,
-      result.message,
-      'error'
-    );
-
-    return;
-  }
-
-  token = result.token;
-  currentUsername = result.username;
-
-  sessionStorage.setItem(
-    'rose_token',
-    token
-  );
-
-  sessionStorage.setItem(
-    'rose_username',
-    currentUsername
-  );
-
-  showApp();
-
-  loadProducts();
-}
-
-
-/* =========================
-   APP
-========================= */
-
-function showApp() {
-
-  loginPage.classList.add('hidden');
-
-  appPage.classList.remove('hidden');
-
-  showPage('dashboard');
-}
-
-
-function showPage(page) {
-
-  currentPage = page;
-
-  document
-    .getElementById('dashboardPage')
-    .classList.add('hidden');
-
-  document
-    .getElementById('productPage')
-    .classList.add('hidden');
-
-  document
-    .getElementById('stockInPage')
-    .classList.add('hidden');
-
-  document
-    .getElementById('settingsPage')
-    .classList.add('hidden');
-
-  if (page === 'dashboard') {
-
-    document
-      .getElementById('dashboardPage')
-      .classList.remove('hidden');
-
-    loadProducts();
-
-  }
-
-  if (page === 'product') {
-
-    document
-      .getElementById('productPage')
-      .classList.remove('hidden');
-
-  }
-
-  if (page === 'stock') {
-
-    document
-      .getElementById('stockInPage')
-      .classList.remove('hidden');
-
-    loadStockProducts();
-
-  }
-
-  if (page === 'settings') {
-
-    document
-      .getElementById('settingsPage')
-      .classList.remove('hidden');
-
-    loadSettings();
-
-    loadActivity();
-
-  }
-}
-
-
-/* =========================
-   PRODUCTS
-========================= */
-
-async function loadProducts() {
-
-  const result =
-    await api(
-      'products',
-      {
-        token
-      }
-    );
-
-  if (!result.success) {
-
-    handleSessionError(
-      result.message
-    );
-
-    return;
-  }
-
-  products =
-    result.products || [];
-
-  renderProducts();
-  updateStats();
-}
-
-
-function renderProducts() {
-
-  const tbody =
-    document.getElementById(
-      'productTableBody'
-    );
-
-  const search =
-    document
-      .getElementById('searchInput')
-      .value
-      .toLowerCase()
-      .trim();
-
-  const filtered =
-    products.filter(
-      function (product) {
-
-        return (
-          product.name
-            .toLowerCase()
-            .includes(search) ||
-
-          product.category
-            .toLowerCase()
-            .includes(search)
-        );
-
-      }
-    );
-
-  tbody.innerHTML = '';
-
-  if (filtered.length === 0) {
-
-    tbody.innerHTML = `
+    productsBody.innerHTML = `
       <tr>
-        <td colspan="7" class="empty">
-          No products found.
+        <td colspan="8" class="empty-row">
+          No products available.
         </td>
       </tr>
     `;
@@ -1274,706 +818,1213 @@ function renderProducts() {
     return;
   }
 
-  filtered.forEach(
+
+  productsBody.innerHTML =
+    products.map(
+      function (product) {
+
+        const productId =
+          product.productId ||
+          product.id ||
+          '';
+
+
+        const name =
+          product.productName ||
+          product.name ||
+          '';
+
+
+        const category =
+          product.category ||
+          '';
+
+
+        const quantity =
+          Number(
+            product.quantity || 0
+          );
+
+
+        const unit =
+          product.unit ||
+          'pcs';
+
+
+        const price =
+          Number(
+            product.price || 0
+          );
+
+
+        const status =
+          product.status ||
+          getLocalStockStatus(
+            quantity
+          );
+
+
+        return `
+          <tr>
+
+            <td>
+              ${escapeHtml(productId)}
+            </td>
+
+            <td>
+              ${escapeHtml(name)}
+            </td>
+
+            <td>
+              ${escapeHtml(category)}
+            </td>
+
+            <td>
+              ${formatNumber(quantity)}
+            </td>
+
+            <td>
+              ${escapeHtml(unit)}
+            </td>
+
+            <td>
+              ${money(price)}
+            </td>
+
+            <td>
+              <span class="status-badge">
+                ${escapeHtml(status)}
+              </span>
+            </td>
+
+            <td>
+
+              <div class="action-buttons">
+
+                <button
+                  type="button"
+                  class="small-btn stock-btn"
+                  data-id="${escapeHtml(productId)}"
+                >
+                  Stock In
+                </button>
+
+                <button
+                  type="button"
+                  class="small-btn edit-btn"
+                  data-id="${escapeHtml(productId)}"
+                >
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  class="small-btn delete-btn"
+                  data-id="${escapeHtml(productId)}"
+                >
+                  Delete
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join('');
+
+
+  /*
+    Attach product button events
+  */
+
+  document
+    .querySelectorAll('.stock-btn')
+    .forEach(
+      function (button) {
+
+        button.addEventListener(
+          'click',
+          function () {
+
+            openStockIn(
+              button.dataset.id
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll('.edit-btn')
+    .forEach(
+      function (button) {
+
+        button.addEventListener(
+          'click',
+          function () {
+
+            openEditProduct(
+              button.dataset.id
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll('.delete-btn')
+    .forEach(
+      function (button) {
+
+        button.addEventListener(
+          'click',
+          function () {
+
+            deleteProduct(
+              button.dataset.id
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   LOCAL STOCK STATUS
+========================================================= */
+
+function getLocalStockStatus(quantity) {
+
+  const qty =
+    Number(quantity) || 0;
+
+
+  if (qty <= 0) {
+
+    return 'Out of Stock';
+
+  }
+
+
+  if (qty <= 5) {
+
+    return 'Low Stock';
+
+  }
+
+
+  return 'In Stock';
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function updateDashboard() {
+
+  let stock = 0;
+
+  let value = 0;
+
+  let low = 0;
+
+
+  products.forEach(
     function (product) {
 
-      const tr =
-        document.createElement('tr');
+      const quantity =
+        Number(
+          product.quantity || 0
+        );
 
-      tr.innerHTML = `
 
-        <td>
-          <strong>
-            ${esc(product.name)}
-          </strong>
-        </td>
+      const price =
+        Number(
+          product.price || 0
+        );
 
-        <td>
-          ${esc(product.category || '-')}
-        </td>
 
-        <td>
-          ${formatNumber(product.quantity)}
-        </td>
+      stock += quantity;
 
-        <td>
-          ${esc(product.unit)}
-        </td>
+      value +=
+        quantity * price;
 
-        <td>
-          ₱${formatMoney(product.price)}
-        </td>
 
-        <td>
-          <span class="status ${statusClass(product.status)}">
-            ${esc(product.status)}
-          </span>
-        </td>
+      if (
+        quantity <= 5
+      ) {
 
-        <td>
+        low++;
 
-          <div class="action-buttons">
-
-            <button
-              class="small-btn"
-              onclick="openEditProduct('${escAttr(product.id)}')"
-            >
-              Edit
-            </button>
-
-            <button
-              class="small-btn stock-btn"
-              onclick="openStockIn('${escAttr(product.id)}')"
-            >
-              Stock In
-            </button>
-
-            <button
-              class="small-btn delete-btn"
-              onclick="deleteProduct('${escAttr(product.id)}')"
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </td>
-
-      `;
-
-      tbody.appendChild(tr);
+      }
 
     }
   );
+
+
+  if (totalProducts) {
+
+    totalProducts.textContent =
+      products.length;
+
+  }
+
+
+  if (totalStock) {
+
+    totalStock.textContent =
+      formatNumber(stock);
+
+  }
+
+
+  if (inventoryValue) {
+
+    inventoryValue.textContent =
+      money(value);
+
+  }
+
+
+  if (lowStockCount) {
+
+    lowStockCount.textContent =
+      low;
+
+  }
+
 }
 
 
-/* =========================
-   STATS
-========================= */
-
-function updateStats() {
-
-  const totalProducts =
-    products.length;
-
-  const totalStock =
-    products.reduce(
-      (sum, product) =>
-        sum + Number(product.quantity || 0),
-      0
-    );
-
-  const lowStock =
-    products.filter(
-      product =>
-        product.status === 'Low Stock' ||
-        product.status === 'Out of Stock'
-    ).length;
-
-  const inventoryValue =
-    products.reduce(
-      (sum, product) =>
-        sum +
-        (
-          Number(product.quantity || 0) *
-          Number(product.price || 0)
-        ),
-      0
-    );
-
-  document.getElementById(
-    'totalProducts'
-  ).textContent =
-    totalProducts;
-
-  document.getElementById(
-    'totalStock'
-  ).textContent =
-    formatNumber(totalStock);
-
-  document.getElementById(
-    'lowStock'
-  ).textContent =
-    lowStock;
-
-  document.getElementById(
-    'inventoryValue'
-  ).textContent =
-    '₱' + formatMoney(inventoryValue);
-}
-
-
-/* =========================
+/* =========================================================
    ADD PRODUCT
-========================= */
+========================================================= */
 
-function openAddProduct() {
-
-  document.getElementById(
-    'productForm'
-  ).reset();
-
-  document.getElementById(
-    'productId'
-  ).value = '';
-
-  document.getElementById(
-    'productFormTitle'
-  ).textContent =
-    'Add Product';
-
-  showPage('product');
-}
-
-
-/* =========================
-   EDIT PRODUCT
-========================= */
-
-function openEditProduct(id) {
-
-  const product =
-    products.find(
-      p => String(p.id) === String(id)
-    );
-
-  if (!product) return;
-
-  document.getElementById(
-    'productId'
-  ).value =
-    product.id;
-
-  document.getElementById(
-    'productName'
-  ).value =
-    product.name;
-
-  document.getElementById(
-    'productCategory'
-  ).value =
-    product.category;
-
-  document.getElementById(
-    'productQuantity'
-  ).value =
-    product.quantity;
-
-  document.getElementById(
-    'productUnit'
-  ).value =
-    product.unit;
-
-  document.getElementById(
-    'productPrice'
-  ).value =
-    product.price;
-
-  document.getElementById(
-    'productFormTitle'
-  ).textContent =
-    'Edit Product';
-
-  showPage('product');
-}
-
-
-/* =========================
-   SAVE PRODUCT
-========================= */
-
-async function saveProduct(event) {
+async function addProduct(event) {
 
   event.preventDefault();
+  event.stopPropagation();
 
-  const id =
+
+  const name =
     document.getElementById(
-      'productId'
-    ).value;
+      'addProductName'
+    ).value.trim();
 
-  const data = {
 
-    token,
+  const category =
+    document.getElementById(
+      'addCategory'
+    ).value.trim();
 
-    id,
 
-    name:
+  const quantity =
+    Number(
       document.getElementById(
-        'productName'
-      ).value.trim(),
-
-    category:
-      document.getElementById(
-        'productCategory'
-      ).value.trim(),
-
-    quantity:
-      Number(
-        document.getElementById(
-          'productQuantity'
-        ).value
-      ),
-
-    unit:
-      document.getElementById(
-        'productUnit'
-      ).value,
-
-    price:
-      Number(
-        document.getElementById(
-          'productPrice'
-        ).value
-      )
-
-  };
-
-  const action =
-    id ? 'editProduct' : 'addProduct';
-
-  const result =
-    await api(
-      action,
-      data
+        'addQuantity'
+      ).value
     );
 
-  if (!result.success) {
+
+  const unit =
+    document.getElementById(
+      'addUnit'
+    ).value;
+
+
+  const price =
+    Number(
+      document.getElementById(
+        'addPrice'
+      ).value
+    );
+
+
+  const message =
+    document.getElementById(
+      'addProductMessage'
+    );
+
+
+  if (!name || !category) {
 
     showMessage(
-      appMessage,
-      result.message,
+      message,
+      'Please complete all required fields.',
       'error'
     );
 
     return;
   }
 
-  showMessage(
-    appMessage,
-    result.message,
-    'success'
+
+  const result =
+    await api(
+      'addProduct',
+      {
+        token: token,
+        productName: name,
+        category: category,
+        quantity: quantity,
+        unit: unit,
+        price: price
+      }
+    );
+
+
+  if (!result || !result.success) {
+
+    handleSessionError(
+      result
+    );
+
+    showMessage(
+      message,
+      result &&
+      result.message
+        ? result.message
+        : 'Unable to add product.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  showNotification(
+    'Product added successfully.'
   );
+
+
+  document
+    .getElementById(
+      'addProductForm'
+    )
+    .reset();
+
 
   await loadProducts();
 
   showPage('dashboard');
+
 }
 
 
-/* =========================
-   DELETE
-========================= */
+/* =========================================================
+   OPEN ADD PRODUCT
+========================================================= */
 
-async function deleteProduct(id) {
+function openAddProduct() {
+
+  const form =
+    document.getElementById(
+      'addProductForm'
+    );
+
+
+  if (form) {
+
+    form.reset();
+
+  }
+
+
+  showPage('addProduct');
+
+}
+
+
+/* =========================================================
+   EDIT PRODUCT
+========================================================= */
+
+function openEditProduct(productId) {
 
   const product =
     products.find(
-      p => String(p.id) === String(id)
+      function (item) {
+
+        return String(
+          item.productId ||
+          item.id
+        ) === String(productId);
+
+      }
     );
 
-  if (!product) return;
+
+  if (!product) {
+
+    showNotification(
+      'Product was not found.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  document.getElementById(
+    'editProductId'
+  ).value =
+    product.productId ||
+    product.id ||
+    '';
+
+
+  document.getElementById(
+    'editProductName'
+  ).value =
+    product.productName ||
+    product.name ||
+    '';
+
+
+  document.getElementById(
+    'editCategory'
+  ).value =
+    product.category ||
+    '';
+
+
+  document.getElementById(
+    'editQuantity'
+  ).value =
+    product.quantity || 0;
+
+
+  document.getElementById(
+    'editUnit'
+  ).value =
+    product.unit || 'pcs';
+
+
+  document.getElementById(
+    'editPrice'
+  ).value =
+    product.price || 0;
+
+
+  showPage('editProduct');
+
+}
+
+
+async function editProduct(event) {
+
+  event.preventDefault();
+  event.stopPropagation();
+
+
+  const productId =
+    document.getElementById(
+      'editProductId'
+    ).value;
+
+
+  const name =
+    document.getElementById(
+      'editProductName'
+    ).value.trim();
+
+
+  const category =
+    document.getElementById(
+      'editCategory'
+    ).value.trim();
+
+
+  const quantity =
+    Number(
+      document.getElementById(
+        'editQuantity'
+      ).value
+    );
+
+
+  const unit =
+    document.getElementById(
+      'editUnit'
+    ).value;
+
+
+  const price =
+    Number(
+      document.getElementById(
+        'editPrice'
+      ).value
+    );
+
+
+  const message =
+    document.getElementById(
+      'editProductMessage'
+    );
+
+
+  const result =
+    await api(
+      'editProduct',
+      {
+        token: token,
+        productId: productId,
+        productName: name,
+        category: category,
+        quantity: quantity,
+        unit: unit,
+        price: price
+      }
+    );
+
+
+  if (!result || !result.success) {
+
+    handleSessionError(
+      result
+    );
+
+    showMessage(
+      message,
+      result &&
+      result.message
+        ? result.message
+        : 'Unable to update product.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  showNotification(
+    'Product updated successfully.'
+  );
+
+
+  await loadProducts();
+
+  showPage('dashboard');
+
+}
+
+
+/* =========================================================
+   DELETE PRODUCT
+========================================================= */
+
+async function deleteProduct(productId) {
+
+  const product =
+    products.find(
+      function (item) {
+
+        return String(
+          item.productId ||
+          item.id
+        ) === String(productId);
+
+      }
+    );
+
+
+  if (!product) {
+
+    showNotification(
+      'Product was not found.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  const name =
+    product.productName ||
+    product.name ||
+    'this product';
+
 
   const confirmed =
-    confirm(
+    window.confirm(
       'Delete "' +
-      product.name +
+      name +
       '" from inventory?'
     );
 
-  if (!confirmed) return;
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
 
   const result =
     await api(
       'deleteProduct',
       {
-        token,
-        id
+        token: token,
+        productId: productId
       }
     );
 
-  if (!result.success) {
 
-    showMessage(
-      appMessage,
-      result.message,
+  if (!result || !result.success) {
+
+    handleSessionError(
+      result
+    );
+
+    showNotification(
+      result &&
+      result.message
+        ? result.message
+        : 'Unable to delete product.',
       'error'
     );
 
     return;
   }
 
-  showMessage(
-    appMessage,
-    '✓ ' +
-    result.message,
-    'success'
+
+  /*
+    The backend records the deletion
+    in ActivityLog.
+  */
+
+  showNotification(
+    'Product deleted successfully.'
   );
+
 
   await loadProducts();
+
+
+  if (
+    document
+      .getElementById(
+        'settingsPage'
+      )
+      .classList.contains('hidden') === false
+  ) {
+
+    await loadActivity();
+
+  }
+
 }
 
 
-/* =========================
+/* =========================================================
    STOCK IN
-========================= */
+========================================================= */
 
-function openStockIn(id) {
-
-  showPage('stock');
-
-  setTimeout(
-    function () {
-
-      const select =
-        document.getElementById(
-          'stockProduct'
-        );
-
-      select.value = id;
-
-    },
-    50
-  );
-}
-
-
-function loadStockProducts() {
+function populateStockProducts() {
 
   const select =
     document.getElementById(
-      'stockProduct'
+      'stockProductId'
     );
 
-  select.innerHTML = '';
+
+  if (!select) return;
+
+
+  select.innerHTML =
+    '<option value="">Select Product</option>';
+
 
   products.forEach(
     function (product) {
+
+      const id =
+        product.productId ||
+        product.id;
+
+
+      const name =
+        product.productName ||
+        product.name ||
+        'Product';
+
 
       const option =
         document.createElement(
           'option'
         );
 
-      option.value =
-        product.id;
+
+      option.value = id;
 
       option.textContent =
-        product.name +
-        ' — Current: ' +
-        formatNumber(product.quantity);
+        name;
 
-      select.appendChild(option);
+
+      select.appendChild(
+        option
+      );
 
     }
   );
+
 }
 
 
-async function saveStockIn(event) {
+function openStockIn(productId) {
+
+  populateStockProducts();
+
+
+  const select =
+    document.getElementById(
+      'stockProductId'
+    );
+
+
+  select.value =
+    productId;
+
+
+  document.getElementById(
+    'stockQuantity'
+  ).value = '';
+
+
+  showPage('stockIn');
+
+}
+
+
+async function stockIn(event) {
 
   event.preventDefault();
+  event.stopPropagation();
 
-  const id =
+
+  const productId =
     document.getElementById(
-      'stockProduct'
+      'stockProductId'
     ).value;
 
-  const amount =
+
+  const quantity =
     Number(
       document.getElementById(
-        'stockAmount'
+        'stockQuantity'
       ).value
     );
+
+
+  const message =
+    document.getElementById(
+      'stockInMessage'
+    );
+
+
+  if (!productId) {
+
+    showMessage(
+      message,
+      'Please select a product.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  if (
+    !quantity ||
+    quantity <= 0
+  ) {
+
+    showMessage(
+      message,
+      'Please enter a valid stock quantity.',
+      'error'
+    );
+
+    return;
+  }
+
 
   const result =
     await api(
       'stockIn',
       {
-        token,
-        id,
-        amount
+        token: token,
+        productId: productId,
+        quantity: quantity
       }
     );
 
-  if (!result.success) {
+
+  if (!result || !result.success) {
+
+    handleSessionError(
+      result
+    );
 
     showMessage(
-      appMessage,
-      result.message,
+      message,
+      result &&
+      result.message
+        ? result.message
+        : 'Unable to add stock.',
       'error'
     );
 
     return;
   }
 
+
+  showNotification(
+    'Stock added successfully.'
+  );
+
+
   document
-    .getElementById('stockInForm')
+    .getElementById(
+      'stockInForm'
+    )
     .reset();
 
-  showMessage(
-    appMessage,
-    result.message,
-    'success'
-  );
 
   await loadProducts();
 
   showPage('dashboard');
+
 }
 
 
-/* =========================
+/* =========================================================
    SETTINGS
-========================= */
+========================================================= */
 
 async function loadSettings() {
+
+  if (!token) return;
+
 
   const result =
     await api(
       'settings',
       {
-        token
+        token: token
       }
     );
 
-  if (!result.success) {
+
+  if (!result || !result.success) {
 
     handleSessionError(
-      result.message
+      result
     );
 
     return;
   }
 
+
   const settings =
-    result.settings;
+    result.settings || {};
 
-  document.getElementById(
-    'reorderLevel'
-  ).value =
-    settings.reorderLevel;
 
-  document.getElementById(
-    'lowStockThreshold'
-  ).value =
-    settings.lowStockThreshold;
+  const reorder =
+    document.getElementById(
+      'reorderLevel'
+    );
 
-  document.getElementById(
-    'defaultUnit'
-  ).value =
-    settings.defaultUnit;
+const threshold =
+    document.getElementById(
+      'lowStockThreshold'
+    );
+
+
+  const unit =
+    document.getElementById(
+      'defaultUnit'
+    );
+
+
+  if (reorder) {
+
+    reorder.value =
+      settings.reorderLevel ??
+      20;
+
+  }
+
+
+  if (threshold) {
+
+    threshold.value =
+      settings.lowStockThreshold ??
+      5;
+
+  }
+
+
+  if (unit) {
+
+    unit.value =
+      settings.defaultUnit ||
+      'pcs';
+
+  }
+
 }
 
 
-async function saveSettings(event) {
+async function updateSettings(event) {
 
   event.preventDefault();
+  event.stopPropagation();
 
-  const data = {
 
-    token,
-
-    reorderLevel:
-      Number(
-        document.getElementById(
-          'reorderLevel'
-        ).value
-      ),
-
-    lowStockThreshold:
-      Number(
-        document.getElementById(
-          'lowStockThreshold'
-        ).value
-      ),
-
-    defaultUnit:
+  const reorderLevel =
+    Number(
       document.getElementById(
-        'defaultUnit'
-      ).value,
-
-    currentPassword:
-      document.getElementById(
-        'currentPassword'
+        'reorderLevel'
       ).value
-
-  };
-
-  const result =
-    await api(
-      'updateSettings',
-      data
     );
 
-  if (!result.success) {
+
+  const lowStockThreshold =
+    Number(
+      document.getElementById(
+        'lowStockThreshold'
+      ).value
+    );
+
+
+  const defaultUnit =
+    document.getElementById(
+      'defaultUnit'
+    ).value;
+
+
+  const currentPassword =
+    document.getElementById(
+      'settingsPassword'
+    ).value;
+
+
+  const message =
+    document.getElementById(
+      'settingsMessage'
+    );
+
+
+  if (!currentPassword) {
 
     showMessage(
-      appMessage,
-      result.message,
+      message,
+      'Enter your current password to authorize this change.',
       'error'
     );
 
     return;
   }
 
+
+  const result =
+    await api(
+      'updateSettings',
+      {
+        token: token,
+        reorderLevel: reorderLevel,
+        lowStockThreshold: lowStockThreshold,
+        defaultUnit: defaultUnit,
+        currentPassword: currentPassword
+      }
+    );
+
+
+  if (!result || !result.success) {
+
+    handleSessionError(
+      result
+    );
+
+    showMessage(
+      message,
+      result &&
+      result.message
+        ? result.message
+        : 'Unable to update settings.',
+      'error'
+    );
+
+    return;
+  }
+
+
   document.getElementById(
-    'currentPassword'
+    'settingsPassword'
   ).value = '';
 
+
   showMessage(
-    appMessage,
-    result.message,
+    message,
+    'Settings updated successfully.',
     'success'
   );
 
-  await loadProducts();
+
+  showNotification(
+    'Settings updated successfully.'
+  );
+
+
   await loadActivity();
+
 }
 
 
-/* =========================
-   ACTIVITY
-========================= */
+/* =========================================================
+   ACTIVITY LOG
+========================================================= */
 
 async function loadActivity() {
+
+  if (!token) return;
+
 
   const result =
     await api(
       'activity',
       {
-        token
+        token: token
       }
     );
 
-  if (!result.success) {
+
+  if (!result || !result.success) {
 
     handleSessionError(
-      result.message
+      result
     );
 
     return;
   }
 
+
   const activity =
-    result.activity || [];
+    Array.isArray(result.activity)
+      ? result.activity
+      : [];
 
-  const loginActivity =
-    activity.filter(
-      item =>
-        [
-          'LOGIN',
-          'FAILED LOGIN',
-          'LOGOUT',
-          'OTP'
-        ].includes(item.action)
-    );
-
-  const recentActivity =
-    activity.filter(
-      item =>
-        ![
-          'LOGIN',
-          'FAILED LOGIN',
-          'LOGOUT',
-          'OTP'
-        ].includes(item.action)
-    );
 
   renderActivity(
-    'loginActivity',
-    loginActivity
+    activity
   );
 
-  renderActivity(
-    'recentActivity',
-    recentActivity
-  );
 }
 
 
-function renderActivity(
-  elementId,
-  activity
-) {
+function renderActivity(activity) {
 
-  const container =
-    document.getElementById(
-      elementId
-    );
+  if (!activityBody) return;
 
-  container.innerHTML = '';
 
-  if (activity.length === 0) {
+  if (!activity.length) {
 
-    container.innerHTML = `
-      <div class="empty">
-        No activity records found.
-      </div>
+    activityBody.innerHTML = `
+      <tr>
+        <td colspan="5" class="empty-row">
+          No activity records.
+        </td>
+      </tr>
     `;
 
     return;
   }
 
-  activity.forEach(
-    function (item) {
 
-      const div =
-        document.createElement('div');
+  activityBody.innerHTML =
+    activity.map(
+      function (item) {
 
-      div.className =
-        'activity-item';
+        return `
+          <tr>
 
-      div.innerHTML = `
+            <td>
+              ${escapeHtml(
+                item.dateTime ||
+                item.timestamp ||
+                ''
+              )}
+            </td>
 
-        <div>
+            <td>
+              ${escapeHtml(
+                item.username ||
+                ''
+              )}
+            </td>
 
-          <strong>
-            ${esc(item.action)}
-          </strong>
+            <td>
+              ${escapeHtml(
+                item.action ||
+                ''
+              )}
+            </td>
 
-          <p>
-            ${esc(item.details)}
-          </p>
+            <td>
+              ${escapeHtml(
+                item.details ||
+                ''
+              )}
+            </td>
 
-        </div>
+            <td>
+              ${escapeHtml(
+                item.status ||
+                ''
+              )}
+            </td>
 
-        <div class="activity-right">
+          </tr>
+        `;
 
-          <span class="activity-status">
-            ${esc(item.status)}
-          </span>
+      }
+    ).join('');
 
-          <small>
-            ${formatDate(item.date)}
-          </small>
-
-        </div>
-
-      `;
-
-      container.appendChild(div);
-
-    }
-  );
 }
 
 
-/* =========================
+/* =========================================================
    LOGOUT
-========================= */
+========================================================= */
 
 async function logout() {
 
-  await api(
-    'logout',
-    {
-      token
-    }
-  );
+  if (token) {
 
-  token = '';
-  currentUsername = '';
+    await api(
+      'logout',
+      {
+        token: token
+      }
+    );
+
+  }
+
 
   sessionStorage.removeItem(
     'rose_token'
@@ -1983,36 +2034,51 @@ async function logout() {
     'rose_username'
   );
 
-  appPage.classList.add('hidden');
-  loginPage.classList.remove('hidden');
 
-  loginForm.classList.remove('hidden');
-  otpForm.classList.add('hidden');
+  token = '';
+
+  currentUsername = '';
+
+
+  showLogin();
+
 
   loginForm.reset();
+
   otpForm.reset();
 
-  showMessage(
-    loginMessage,
-    'You have been logged out.',
-    'success'
+
+  clearMessage(
+    loginMessage
   );
+
+  clearMessage(
+    otpMessage
+  );
+
 }
 
 
-/* =========================
-   SESSION
-========================= */
+/* =========================================================
+   SESSION ERROR
+========================================================= */
 
-function handleSessionError(message) {
+function handleSessionError(result) {
+
+  if (!result) return;
+
+
+  const message =
+    String(
+      result.message || ''
+    ).toLowerCase();
+
 
   if (
-    message &&
-    message.toLowerCase()
-      .includes('session')
+    message.includes('session') ||
+    message.includes('token') ||
+    message.includes('login required')
   ) {
-
-    token = '';
 
     sessionStorage.removeItem(
       'rose_token'
@@ -2022,129 +2088,464 @@ function handleSessionError(message) {
       'rose_username'
     );
 
-    appPage.classList.add('hidden');
-    loginPage.classList.remove('hidden');
 
+    token = '';
+
+    currentUsername = '';
+
+
+    showLogin();
+
+
+    showMessage(
+      loginMessage,
+      'Your session has expired. Please log in again.',
+      'error'
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SYSTEM NOTIFICATION
+========================================================= */
+
+function showNotification(
+  message,
+  type = 'success'
+) {
+
+  const notification =
+    document.getElementById(
+      'systemNotification'
+    );
+
+
+  const text =
+    document.getElementById(
+      'notificationText'
+    );
+
+
+  if (!notification || !text) {
     return;
   }
 
-  showMessage(
-    appMessage,
-    message,
-    'error'
-  );
-}
 
-
-/* =========================
-   MESSAGE
-========================= */
-
-function showMessage(
-  element,
-  message,
-  type
-) {
-
-  element.textContent =
+  text.textContent =
     message;
 
-  element.className =
-    'message ' + type;
-}
+
+  notification.className =
+    'system-notification ' +
+    type;
 
 
-function clearMessage(element) {
-
-  element.textContent = '';
-
-  element.className =
-    'message';
-}
-
-
-/* =========================
-   FORMATTING
-========================= */
-
-function formatMoney(value) {
-
-  return Number(value || 0)
-    .toLocaleString(
-      'en-PH',
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
-}
-
-
-function formatNumber(value) {
-
-  return Number(value || 0)
-    .toLocaleString(
-      'en-PH',
-      {
-        maximumFractionDigits: 2
-      }
-    );
-}
-
-
-function formatDate(value) {
-
-  if (!value) return '';
-
-  const date =
-    new Date(value);
-
-  if (isNaN(date.getTime())) {
-    return String(value);
-  }
-
-  return date.toLocaleString(
-    'en-PH',
-    {
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    }
+  showElement(
+    notification
   );
+
+
+  setTimeout(
+    function () {
+
+      hideElement(
+        notification
+      );
+
+    },
+    3500
+  );
+
 }
 
 
-function statusClass(status) {
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
 
-  if (status === 'In Stock') {
-    return 'in-stock';
+document.addEventListener(
+  'DOMContentLoaded',
+  function () {
+
+
+    /*
+      LOGIN
+
+      We use addEventListener instead of
+      allowing normal form submission.
+    */
+
+    if (loginForm) {
+
+      loginForm.addEventListener(
+        'submit',
+        sendLogin
+      );
+
+    }
+
+
+    /*
+      OTP
+    */
+
+    if (otpForm) {
+
+      otpForm.addEventListener(
+        'submit',
+        verifyOtp
+      );
+
+    }
+
+
+    /*
+      Back to login
+    */
+
+    const backToLoginBtn =
+      document.getElementById(
+        'backToLoginBtn'
+      );
+
+
+    if (backToLoginBtn) {
+
+      backToLoginBtn.addEventListener(
+        'click',
+        backToLogin
+      );
+
+    }
+
+
+    /*
+      Add Product
+    */
+
+    const addProductForm =
+      document.getElementById(
+        'addProductForm'
+      );
+
+
+    if (addProductForm) {
+
+      addProductForm.addEventListener(
+        'submit',
+        addProduct
+      );
+
+    }
+
+
+    /*
+      Edit Product
+    */
+
+    const editProductForm =
+      document.getElementById(
+        'editProductForm'
+      );
+
+
+    if (editProductForm) {
+
+      editProductForm.addEventListener(
+        'submit',
+        editProduct
+      );
+
+    }
+
+
+    /*
+      Stock In
+    */
+
+    const stockInForm =
+      document.getElementById(
+        'stockInForm'
+      );
+
+
+    if (stockInForm) {
+
+      stockInForm.addEventListener(
+        'submit',
+        stockIn
+      );
+
+    }
+
+
+    /*
+      Settings
+    */
+
+    const settingsForm =
+      document.getElementById(
+        'settingsForm'
+      );
+
+
+    if (settingsForm) {
+
+      settingsForm.addEventListener(
+        'submit',
+        updateSettings
+      );
+
+    }
+
+
+    /*
+      Add Product button
+    */
+
+    const addProductBtn =
+      document.getElementById(
+        'addProductBtn'
+      );
+
+
+    if (addProductBtn) {
+
+      addProductBtn.addEventListener(
+        'click',
+        openAddProduct
+      );
+
+    }
+
+
+    /*
+      Cancel Add
+    */
+
+    const cancelAddBtn =
+      document.getElementById(
+        'cancelAddBtn'
+      );
+
+
+    if (cancelAddBtn) {
+
+      cancelAddBtn.addEventListener(
+        'click',
+        function () {
+
+          showPage('dashboard');
+
+        }
+      );
+
+    }
+
+
+    /*
+      Cancel Edit
+    */
+
+    const cancelEditBtn =
+      document.getElementById(
+        'cancelEditBtn'
+      );
+
+
+    if (cancelEditBtn) {
+
+      cancelEditBtn.addEventListener(
+        'click',
+        function () {
+
+          showPage('dashboard');
+
+        }
+      );
+
+    }
+
+
+    /*
+      Cancel Stock
+    */
+
+    const cancelStockBtn =
+      document.getElementById(
+        'cancelStockBtn'
+      );
+
+
+    if (cancelStockBtn) {
+
+      cancelStockBtn.addEventListener(
+        'click',
+        function () {
+
+          showPage('dashboard');
+
+        }
+      );
+
+    }
+
+
+    /*
+      Home
+    */
+
+    const homeBtn =
+      document.getElementById(
+        'homeBtn'
+      );
+
+
+    if (homeBtn) {
+
+      homeBtn.addEventListener(
+        'click',
+        function () {
+
+          showPage('dashboard');
+
+        }
+      );
+
+    }
+
+
+    /*
+      Back
+    */
+
+    const backBtn =
+      document.getElementById(
+        'backBtn'
+      );
+
+
+    if (backBtn) {
+
+      backBtn.addEventListener(
+        'click',
+        function () {
+
+          showPage(
+            previousPage === 'dashboard'
+              ? 'dashboard'
+              : 'dashboard'
+          );
+
+        }
+      );
+
+    }
+
+
+    /*
+      Settings
+    */
+
+    const settingsBtn =
+      document.getElementById(
+        'settingsBtn'
+      );
+
+
+    if (settingsBtn) {
+
+      settingsBtn.addEventListener(
+        'click',
+        function () {
+
+          showPage('settings');
+
+        }
+      );
+
+    }
+
+
+    /*
+      Logout
+    */
+
+    const logoutBtn =
+      document.getElementById(
+        'logoutBtn'
+      );
+
+
+    if (logoutBtn) {
+
+      logoutBtn.addEventListener(
+        'click',
+        logout
+      );
+
+    }
+
+
+    /*
+      Refresh products
+    */
+
+    const refreshProductsBtn =
+      document.getElementById(
+        'refreshProductsBtn'
+      );
+
+
+    if (refreshProductsBtn) {
+
+      refreshProductsBtn.addEventListener(
+        'click',
+        loadProducts
+      );
+
+    }
+
+
+    /*
+      Refresh activity
+    */
+
+    const refreshActivityBtn =
+      document.getElementById(
+        'refreshActivityBtn'
+      );
+
+
+    if (refreshActivityBtn) {
+
+      refreshActivityBtn.addEventListener(
+        'click',
+        loadActivity
+      );
+
+    }
+
+
+    /*
+      Only automatically show the application
+      if a valid session token already exists.
+    */
+
+    if (token) {
+
+      showApp();
+
+      loadProducts();
+
+    } else {
+
+      showLogin();
+
+    }
+
   }
-
-  if (status === 'Low Stock') {
-    return 'low-stock';
-  }
-
-  return 'out-stock';
-}
-
-
-/* =========================
-   SECURITY HELPERS
-========================= */
-
-function esc(value) {
-
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-
-function escAttr(value) {
-
-  return String(value ?? '')
-    .replaceAll('\\', '\\\\')
-    .replaceAll("'", "\\'");
-}
+);
